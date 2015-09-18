@@ -17,6 +17,12 @@ function Line:draw()
    love.graphics.setColor(WHITE)
 end
 
+function Line:getValue()
+   local p = self.scene.p
+   print("line dist from p")
+end
+
+
 function Line.static:length(x,y)
    return math.sqrt(x*x + y*y)
 end

@@ -4,6 +4,7 @@ DEBUG = true
 Class = require 'middleclass/middleclass'
 Scene = require 'Scene'
 Entity = require 'Entity'
+Vector = require 'hump/vector-light'
 ResourceManager = require 'ResourceManager'
 
 local MainScene = require 'MainScene'

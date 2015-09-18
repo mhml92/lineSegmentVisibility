@@ -3,10 +3,9 @@ local Menu = require 'entities/Menu'
 local CameraManager = require 'CameraManager'
 local Point = require 'entities/Point'
 local Line = require 'entities/Line'
-local RBTree = require 'RBTree/RBTree'
-local Node = require 'RBTree/Node'
 local Grid = require 'entities/Grid'
 local ActionManager = require 'ActionManager'
+local LV = require 'LineVisibility/LV'
 
 ---------------------------------------------------------------------
 --										INITIALIZE
@@ -17,9 +16,9 @@ function MainScene:initialize()
    self.cammgr = CameraManager:new(self)
    self.actmgr = ActionManager:new(self)
    self:defineLayers()
-
    self.p = nil
    self.points = {}
+   self.lines = {}
 
    self:addEntity(Grid:new(self)) 
    -----------------------------------------------------------------
@@ -58,6 +57,7 @@ function MainScene:initialize()
             end
          end
       end
+      self.LV = LV:new(self.points,self.lines,self.p,self)
    else
       msg = [[ 
       +-----------------------------------------+
@@ -70,6 +70,7 @@ function MainScene:initialize()
 end
 
 function Scene:defineLayers()
+
    self:addLayer("Grid")
    self:addLayer("Line")
    self:addLayer("Point")
@@ -127,6 +128,7 @@ function Scene:draw()
          v:draw()
       end
    end
+   self.LV:draw()
    self.cammgr:detach()
    self.menu:draw()
 end
