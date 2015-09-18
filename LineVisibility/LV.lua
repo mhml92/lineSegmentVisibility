@@ -19,11 +19,11 @@ function LV:initialize(points,lines,p,scene)
    print(Vector.angleTo(vx,vy))
 
    table.sort(self.points, function(p1,p2)
-      local v1,v2 = Vector.angleTo(p.x,p.y,self.p1.x,self.p1.y), Vector.angleTo(p.x,p.y,self.p2.x,self.p2.y)
+      local v1,v2 = Vector.angleTo(self.p.x,self.p.y,p1.x,p1.y), Vector.angleTo(self.p.x,self.p.y,p2.x,p2.y)
       if v1 < v2 then
          return true
       elseif v1 == v2 then
-         local d1,d2 = Vector.dist2(self.p.x,self.p.y,v1.x,v1.y),Vector.dist2(self.p.x,self.p.y,v2.x,v2.y) 
+         local d1,d2 = Vector.dist2(self.p.x,self.p.y,p1.x,p1.y),Vector.dist2(self.p.x,self.p.y,p2.x,p2.y) 
          if d1 < d2 then 
             return true 
          else 
