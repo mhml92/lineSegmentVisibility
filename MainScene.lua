@@ -27,8 +27,11 @@ function MainScene:initialize()
    -----------------------------------------------------------------
    inputArg = arg[2] or ""
    print(inputArg)
-   if love.filesystem.isFile(inputArg) then
-      for line in love.filesystem.lines(inputArg) do
+   if io.input(inputArg) then
+      while true do
+         local line = io.read()
+         if line == nil then break end
+      
          -- trim all whitespace
          line = line:gsub("%s+", "")
          if line:sub(1,1) ~= "#" and line ~= "" then
