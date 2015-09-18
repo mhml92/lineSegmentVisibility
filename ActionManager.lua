@@ -22,6 +22,7 @@ function ActionManager:update(dt)
    local dist = nil
    -- find closest point
    for k,v in ipairs(self.scene.points) do
+      v:setMarked(false)
       if closest ~= nil then
          local d = Line.static:dist(mx,my,v.x,v.y)
          if d < dist then
@@ -33,6 +34,7 @@ function ActionManager:update(dt)
          dist = Line.static:dist(mx,my,v.x,v.y)
       end
    end
+   self.scene.p:setMarked(false)
    -- check if p is closer
    local d = Line.static:dist(mx,my,self.scene.p.x,self.scene.p.y)
    if d < dist then
@@ -58,7 +60,7 @@ end
 
 function ActionManager:markClosest(closest,dist)
    if dist < POINT_GRAB_DIST then
-      closest:setMarked()
+      closest:setMarked(true)
    end
 end
 

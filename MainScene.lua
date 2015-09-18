@@ -25,7 +25,7 @@ function MainScene:initialize()
    -----------------------------------------------------------------
    -- READ INPUT FILE
    -----------------------------------------------------------------
-   inputArg = "../" .. arg[2] or ""
+   inputArg = arg[2] or ""
    print(inputArg)
    if love.filesystem.isFile(inputArg) then
       for line in love.filesystem.lines(inputArg) do

@@ -17,8 +17,8 @@ function Point:setViewPoint()
    self.point_size = VIEW_POINT_SIZE
 end
 
-function Point:setMarked()
-   self.marked = true
+function Point:setMarked(v)
+   self.marked = v
 end
 
 function Point:draw()
@@ -27,7 +27,6 @@ function Point:draw()
       love.graphics.setColor(POINT_MARKED_COLOR)
       --love.graphics.circle("fill", self.x, self.y, POINT_MARKED_SIZE, 16)
       love.graphics.circle("line", self.x, self.y, POINT_MARKED_SIZE, 32)
-      self.marked = false
    end
 
    if self.viewPoint then
