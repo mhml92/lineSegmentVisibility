@@ -24,9 +24,10 @@ function MainScene:initialize()
    -----------------------------------------------------------------
    -- READ INPUT FILE
    -----------------------------------------------------------------
-   inputArg = arg[2] or ""
+   inputArg = arg[2] or nil
    print(inputArg)
-   if io.input(inputArg) then
+   if inputArg then
+      io.input(inputArg)
       while true do
          local line = io.read()
          if line == nil then break end
@@ -49,7 +50,10 @@ function MainScene:initialize()
                self.p:setViewPoint()
                self.cammgr:setCenter(self.p.x,self.p.y)
             else 
-               self:addEntity(Line:new(pList[1],pList[2],self))
+               local line = Line:new(pList[1],pList[2],self)
+               table.insert(self.lines, line)
+
+               self:addEntity(line)
                self:addEntity(pList[1])
                self:addEntity(pList[2])
                table.insert(self.points,pList[1])
@@ -131,6 +135,16 @@ function Scene:draw()
    self.LV:draw()
    self.cammgr:detach()
    self.menu:draw()
+end
+
+---------------------------------------------------------------------
+--                            FUNCTIONS
+---------------------------------------------------------------------
+function Scene:keypressed(key)
+   --quick hack, update lv on each step
+   if key == "r" then
+      self.LV = LV:new(self.points,self.lines,self.p,self)
+   end
 end
 
 return MainScene

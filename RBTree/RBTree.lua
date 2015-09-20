@@ -2,11 +2,13 @@ local RBTree = Class('RBTree')
 local Node = require 'RBTree/Node'
 
 function RBTree:initialize()
-
-    self.null = nil
-    self.root = self.null
+    --CONSTANTS
     self.RED = 0
     self.BLACK = 1
+
+    --CREATE NULL ROOT
+    self.null = Node:new(self,math.inf,nil,nil,nil)
+    self.root = self.null
 
 end
 
@@ -17,7 +19,7 @@ function RBTree:deleteFixup(x)
             if w.color == self.RED then
                 w.color = self.BLACK
                 x.p.color = self.RED
-                leftRotate(x.p)
+                self:leftRotate(x.p)
                 w = x.p.right
             end
             if w.left.color == self.BLACK and w.right.color == self.BLACK then
@@ -27,13 +29,13 @@ function RBTree:deleteFixup(x)
                 if w.right.color == self.BLACK then
                     w.left.color = self.BLACK
                     w.color = self.RED
-                    rightRotate(w)
+                    self:rightRotate(w)
                     w = x.p.right
                 end
                 w.color = x.p.color
                 x.p.color = self.BLACK
                 w.right.color = self.BLACK
-                leftRotate(x.p)
+                self:leftRotate(x.p)
                 x = self.root
             end
         else                                                                                -- FIXED
@@ -41,7 +43,7 @@ function RBTree:deleteFixup(x)
             if w.color == self.RED then
                 w.color = self.BLACK
                 x.p.color = self.RED
-                rightRotate(x.p)
+                self:rightRotate(x.p)
                 w = x.p.left
             end
             if w.right.color == self.BLACK and w.left.color == self.BLACK then
@@ -51,13 +53,13 @@ function RBTree:deleteFixup(x)
                 if w.left.color == self.BLACK then
                     w.right.color = self.BLACK
                     w.color = self.RED
-                    leftRotate(w)
+                    self:leftRotate(w)
                     w = x.p.left
                 end
                 w.color = x.p.color
                 x.p.color = self.BLACK
                 w.left.color = self.BLACK
-                rightRotate(x.p)
+                self:rightRotate(x.p)
                 x = self.root
             end
         end
@@ -77,28 +79,28 @@ function RBTree:delete(z)
     yOriginalColor = y.color
     if z.left == self.null then
         x = z.right
-        transplant(z,z.right)
+        self:transplant(z,z.right)
     elseif z.right == self.null then
         x = z.left
-        transplant(z,z.left)
+        self:transplant(z,z.left)
     else
-        y = treeMinimum(z.right)
+        y = self:treeMinimum(z.right)
         yOriginalColor = y.color
         x = y.right
         if y.p == z then
             x.p = z
         else
-            transplant(y,y.right)
+            self:transplant(y,y.right)
             y.right = z.right
             y.right.p = y
         end
-        transplant(z,y)
+        self:transplant(z,y)
         y.left = z.left
         y.left.p = y
         y.color = z.color
     end
     if yOriginalColor == self.BLACK then
-        deleteFixup(x)
+        self:deleteFixup(x)
     end
 end
 
@@ -125,11 +127,11 @@ function RBTree:insertFixup(z)
             else
                 if z == z.p.right then
                     z = z.p
-                    leftRotate(z)
+                    self:leftRotate(z)
                 end
                 z.p.color = self.BLACK
                 z.p.p.color = self.RED
-                rightRotate(z.p.p)
+                self:rightRotate(z.p.p)
             end
         else                                                    -- FIXED
             y = z.p.p.right
@@ -141,11 +143,11 @@ function RBTree:insertFixup(z)
             else
                 if z == z.p.left then
                     z = z.p
-                    rightRotate(z)
+                    self:rightRotate(z)
                 end
                 z.p.color = self.BLACK
                 z.p.p.color = self.RED
-                leftRotate(z.p.p)
+                self:leftRotate(z.p.p)
             end
         end
     end
@@ -165,6 +167,7 @@ function RBTree:insert(z)
     end
     z.p = y
     if y == self.null then
+        print("setting root")
         self.root = z
     elseif z:getKey() < y:getKey() then
         y.left = z

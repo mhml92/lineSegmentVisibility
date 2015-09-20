@@ -2,11 +2,28 @@ local Line = Class("Line", Entity)
 
 function Line:initialize(p1,p2,scene)
    Entity:initialize(scene)
+
+   --normalize line
+   if p1.x > p2.x then
+      p1,p2 = p2,p1 --swap if p2.x is less than p1.x
+   else
+      if p1.x == p2.x then
+         if p1.y > p2.y then
+            p1,p2 = p2,p1 --swap
+         end
+      end
+   end
+
    self.p1 = p1
    self.p2 = p2
+   
    self.layerName = "Line"
+
+   --fast references
    self.p1.line = self
+   self.p1.other = p2
    self.p2.line = self
+   self.p2.other = p1
 
 end
 
