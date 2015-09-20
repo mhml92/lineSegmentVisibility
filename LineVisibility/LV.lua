@@ -28,7 +28,7 @@ function LV:initialize(points,lines,p,scene)
    end
 
    table.sort(self.points, function(p1,p2)
-      local v1,v2 = Vector.angleTo(self.p.x,self.p.y,p1.x,p1.y), Vector.angleTo(self.p.x,self.p.y,p2.x,p2.y)
+      local v1,v2 = Vector.angleTo(self.p.x-p1.x,self.p.y-p1.y), Vector.angleTo(self.p.x-p2.x,self.p.y-p2.y)
       --normalie to start from zero
       --v1 = v1 < 0 and 1-v1 or v1 
       --v2 = v2 < 0 and 1-v2 or v2
@@ -62,7 +62,7 @@ end
 function LV:addStartingPoints()
    for _,p in ipairs(self.points) do
       --check if the staring points are on both sides of the initial line
-      if p.x < self.p.x and p.other.x < self.p.x and 
+      if p.x > self.p.x and p.other.x > self.p.x and 
          p.y < self.p.y and p.other.y >= self.p.y then
          
          print(p,"Point added to initial status")
@@ -83,7 +83,7 @@ function LV:checkCloser(point,test)
       return false
    end
 
-   if point ~= (test:getObject().line.p1 or test:getObject().line.p2) then
+   if point ~= test:getObject().line.p1 and point ~= test:getObject().line.p2 then
       --create lines
       local l1 = {} 
       l1.x,l1.y = test:getObject().line.p1.x,test:getObject().line.p1.y
@@ -114,6 +114,7 @@ end
 
 function LV:runAlg()
    for _,point in ipairs(self.points) do
+      print("testing")
 
       self:addToStatus(point)
 
@@ -191,11 +192,11 @@ function LV:draw()
    love.graphics.setLineWidth(0.25)
    for _,l in pairs(self.debugLines.t1) do
       love.graphics.setColor(GREENSEA)
-      love.graphics.line(l.x,l.y,l.x2,l.y2)
+      --love.graphics.line(l.x,l.y,l.x2,l.y2)
    end
    for _,l in pairs(self.debugLines.t2) do
       love.graphics.setColor(MIDNIGHTBLUE)
-      love.graphics.line(l.x,l.y,l.x2,l.y2)
+      --love.graphics.line(l.x,l.y,l.x2,l.y2)
    end 
    for _,l in pairs(self.debugLines.t3) do
       love.graphics.setColor(DARKRED)

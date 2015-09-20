@@ -51,7 +51,7 @@ function Point:draw()
    --dirty hack
    if self.number then
       love.graphics.setColor(POINT_MARKED_COLOR)
-      love.graphics.print(self.number, self.x, self.y-30)
+      love.graphics.print(self.number, self.x, self.y-15)
    end
 
    if self.viewPoint then
