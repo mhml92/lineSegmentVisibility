@@ -4,7 +4,7 @@ function Menu:initialize(x,y,scene)
    Entity:initialize(scene)
    self.x = x
    self.y = y
-   self.width = BUTTONCOLUMNS*(BUTTON_ZISE+10)+10
+   self.width = BUTTONCOLUMNS*(BUTTON_ZISE+PADDING)+PADDING
    self.height = love.graphics.getHeight( )
    self.buttons = {}
    self.btnid = 0
@@ -44,15 +44,16 @@ function Menu:draw()
    currentMode = self.scene.actmgr.MODE
    for i,btn in ipairs(self.buttons)  do
       if btn.mode == currentMode then
-         love.graphics.setColor(TURQOUISE)
+         love.graphics.setColor(BUTTON_COLOR_ACTIVE)
       else
-         love.graphics.setColor(GREENSEA)
+         love.graphics.setColor(BUTTON_COLOR)
       end
       love.graphics.rectangle("fill",btn.x,btn.y,BUTTON_ZISE,BUTTON_ZISE)
       if btn.mode == currentMode then
          love.graphics.setColor(OFFWHITE)
       else
          love.graphics.setColor(TURQOUISE)
+         --love.graphics.setColor(WETASPHALT)
       end
       local scale = BUTTON_ZISE/btn.img:getWidth()
       love.graphics.draw(btn.img,btn.x, btn.y,0,scale,scale)
