@@ -24,6 +24,9 @@ function LV:initialize(points,lines,p,scene)
 
    --add distance for each point
    for _,p in ipairs(self.points) do
+      --also reset nodes
+      p.node = nil
+
       p:setValue(Vector.dist(self.p.x,self.p.y,p.x,p.y))
    end
 
@@ -63,7 +66,7 @@ function LV:addStartingPoints()
    for _,p in ipairs(self.points) do
       --check if the staring points are on both sides of the initial line
       if p.x > self.p.x and p.other.x > self.p.x and 
-         p.y < self.p.y and p.other.y >= self.p.y then
+         p.y <= self.p.y and p.other.y >= self.p.y then
          
          print(p,"Point added to initial status")
          self:addToStatus(p)
@@ -152,7 +155,6 @@ function LV:runAlg()
          point:setVisible(0)
          print("point should not be visible")
       end
-
       if point.node and point.other.node then
          self.status:delete(point.node)
          self.status:delete(point.other.node)
