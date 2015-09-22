@@ -13,14 +13,8 @@ function LV:initialize(points,lines,p,scene)
    self.points = points
    self.lines = lines
    self.status = RBTree:new()
-   self.sweepLine = Line:new(Point:new(self.p.x,self.p.y,self.scene),Point:new(1000,self.p.y,self.scene),self.scene) 
 
    self.debugLines = {t1={},t2={},t3={}}
-
-
-   local p1,p2 = self.sweepLine.p1,self.sweepLine.p2
-   local vx,vy = p2.x-p1.x,p2.y,p1.y
-
 
    --add distance for each point
    for _,p in ipairs(self.points) do
@@ -76,8 +70,13 @@ function LV:addStartingPoints()
 end
 
 function LV:addToStatus(p)
-   p.node = Node:new(0,p,nil,nil,self.status.null)
+   print("creating new node")
+   p.node = Node:new(0,p,self.status.null,self.status.null,self.status.null)
+   
+   print("inserting new node")
    self.status:insert(p.node)
+   
+   print("after insert")
 end
 
 function LV:checkCloser(point,test)
@@ -121,6 +120,7 @@ function LV:runAlg()
 
       self:addToStatus(point)
 
+      print("testing 2")
       print(point.node.left == self.status.null, point.node.left == self.status.null)
 
       --iterate all possible node below current point
@@ -156,8 +156,8 @@ function LV:runAlg()
          print("point should not be visible")
       end
       if point.node and point.other.node then
-         self.status:delete(point.node)
-         self.status:delete(point.other.node)
+         --self.status:delete(point.node)
+         --self.status:delete(point.other.node)
       end
    end
 end
@@ -186,7 +186,7 @@ function LV:lineIntersection(line, line2)
 end
 
 function LV:draw()
-   self.sweepLine:draw()
+   --self.sweepLine:draw()
 
 
    --print(I(self.debugLines))

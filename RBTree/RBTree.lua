@@ -7,13 +7,16 @@ function RBTree:initialize()
     self.BLACK = 1
 
     --CREATE NULL ROOT
-    self.null = Node:new(self,math.inf,nil,nil,nil)
+    self.null = Node:new(1,math.inf,nil,nil,nil)
+    self.null.left = self.null
+    self.null.right = self.null
+    self.null.p = self.null
     self.root = self.null
 
 end
 
 function RBTree:deleteFixup(x)
-    while x ~= self.root and x.color ~= self.BLACK do
+    while x ~= self.root and x.color == self.BLACK do
         if x == x.p.left then
             w = x.p.right
             if w.color == self.RED then
@@ -76,7 +79,7 @@ end
 
 function RBTree:delete(z)
     y = z
-    yOriginalColor = y.color
+    local yOriginalColor = y.color
     if z.left == self.null then
         x = z.right
         self:transplant(z,z.right)
@@ -116,9 +119,10 @@ function RBTree:transplant(u,v)
 end
 
 function RBTree:insertFixup(z)
+    print("insert fixup")
     while z.p.color == self.RED do
         if z.p == z.p.p.left then
-            y = z.p.p.left
+            y = z.p.p.right
             if y.color == self.RED then
                 z.p.color = self.BLACK
                 y.color = self.BLACK
@@ -134,7 +138,7 @@ function RBTree:insertFixup(z)
                 self:rightRotate(z.p.p)
             end
         else                                                    -- FIXED
-            y = z.p.p.right
+            y = z.p.p.left
             if y.color == self.RED then
                 z.p.color = self.BLACK
                 y.color = self.BLACK
@@ -157,14 +161,21 @@ end
 function RBTree:insert(z)
     y = self.null 
     x = self.root
+    print("test 1")
     while x ~= self.null do
+        print(x,x:getKey())
+        print(z,z:getKey())
         y = x
         if z:getKey() < x:getKey() then
+            print(x == x.left)
             x = x.left
         else
+            print(x == x.right)
             x = x.right 
         end
     end
+    print("test 2")
+
     z.p = y
     if y == self.null then
         print("setting root")
@@ -174,6 +185,9 @@ function RBTree:insert(z)
     else
         y.right = z
     end
+
+    print("test 3")
+
     z.left = self.null
     z.right = self.null
     z.color = self.RED
