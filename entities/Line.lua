@@ -48,6 +48,34 @@ function Line.static:dist(x1,y1,x2,y2)
    return Line.static:length(x1-x2, y1-y2)
 end
 
+--[[
+function Line:distanceToP(p, line)
+   var m1 = 0.0 -- slope of first line
+   var b1 = 0.0 -- y-intercept of first line
+   var m2 = 0.0 -- slope of second line
+   var b2 = 0.0 -- y-intercept of second line
+
+   var x = 0.0 -- (x, y) point of intersection.
+   var y = 0.0
+
+   var message = ''
+
+   -- get slopes and y-intercepts
+   m1 = parseFloat(window.document.input.m1.value)
+   b1 = parseFloat(window.document.input.b1.value)
+   m2 = parseFloat(window.document.input.m2.value)
+   b2 = parseFloat(window.document.input.b2.value)
+
+   x = (b2 - b1) / (m1 - m2); -- solve for x-coordinate of intersection
+
+   y = m1 * x + b1; -- solve
+
+   message  = 'Point of intersection: \n'
+   message = message .. '(' + x + ', ' + y + ')';
+
+   --alert(message);
+end]]
+
 
 return Line
 

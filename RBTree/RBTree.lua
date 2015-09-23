@@ -167,10 +167,10 @@ function RBTree:insert(z)
         print(z,z:getKey())
         y = x
         if z:getKey() < x:getKey() then
-            print(x == x.left)
+            print("first",x == x.left)
             x = x.left
         else
-            print(x == x.right)
+            print("second",x == x.right)
             x = x.right 
         end
     end
@@ -228,6 +228,10 @@ function RBTree:rightRotate(y)
     end
     x.right = y
     y.p = x
+end
+
+function RBTree:draw(x,y)
+    --love.graphics.circle()
 end
 
 return RBTree

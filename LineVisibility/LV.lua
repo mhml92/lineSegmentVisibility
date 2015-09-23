@@ -7,14 +7,19 @@ local Line = require 'entities/Line'
 
 local I = require('inspect')
 
-function LV:initialize(points,lines,p,scene)
+function LV:initialize(points,lines,p,scene,co)
    self.scene = scene
    self.p = p
    self.points = points
    self.lines = lines
    self.status = RBTree:new()
+   self.coroutine = co
 
    self.debugLines = {t1={},t2={},t3={}}
+   if self.coroutine then
+      print(I(self.lines))
+      coroutine.yield()
+   end
 
    --add distance for each point
    for _,p in ipairs(self.points) do
@@ -48,12 +53,6 @@ function LV:initialize(points,lines,p,scene)
    for k,point in ipairs(self.points) do
       point.number = k
    end
-
-   self:prettyPrint()
-
-   self:addStartingPoints()
-
-   self:runAlg()
 end
 
 function LV:addStartingPoints()
@@ -81,7 +80,7 @@ end
 
 function LV:checkCloser(point,test)
    if test == self.status.null then
-      print("test is null")
+      --print("test is null")
       return false
    end
 
@@ -98,7 +97,6 @@ function LV:checkCloser(point,test)
       table.insert(self.debugLines.t2, l2)
 
       if self:lineIntersection(l1,l2) then
-         print("found intersection")
          table.insert(self.debugLines.t3, l1)
          table.insert(self.debugLines.t3, l2)
 
@@ -116,37 +114,17 @@ end
 
 function LV:runAlg()
    for _,point in ipairs(self.points) do
-      print("testing")
+      
+      if not point.node then
+         self:addToStatus(point)
+      end
 
-      self:addToStatus(point)
-
-      print("testing 2")
-      print(point.node.left == self.status.null, point.node.left == self.status.null)
-
+      if self.coroutine then
+         coroutine.yield()
+      end
+      
       --iterate all possible node below current point
       local found = self:checkCloser(point,self.status.root)
-
-      --[[while(test ~= self.status.null and point ~= (test:getObject().line.p1 or test:getObject().line.p1)) do
-         --create lines
-         local l1 = {} 
-         l1.x,l1.y = test:getObject().line.p1.x,test:getObject().line.p1.y
-         l1.x2,l1.y2 = test:getObject().line.p2.x,test:getObject().line.p2.y
-         table.insert(self.debugLines.t1, l1)
-
-         local l2 = {} 
-         l2.x,l2.y = self.p.x,self.p.y --our main point
-         l2.x2,l2.y2 = point.x,point.y -- our current point
-         table.insert(self.debugLines.t2, l2)
-
-         if self:lineIntersection(l1,l2) then
-            print("found intersection")
-            found = true
-            break
-         end
-
-         test = test.left
-      end]]
-
 
       if not found then
          print("point should be visible")
@@ -156,8 +134,12 @@ function LV:runAlg()
          print("point should not be visible")
       end
       if point.node and point.other.node then
-         --self.status:delete(point.node)
-         --self.status:delete(point.other.node)
+         if point.node == point.other.node then
+            print("WRONG!!!!!!!")
+            return false
+         end
+         self.status:delete(point.node)
+         self.status:delete(point.other.node)
       end
    end
 end
@@ -165,7 +147,6 @@ end
 --http://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
 function LV:lineIntersection(line, line2)
    --local tl = {x=self.x-self.velx,y=self.y-self.vely,x2=self.x,y2=self.y+9}
-
    local a,b,c,d = 
    {X=line2.x,Y=line2.y},
    {X=line2.x2,Y=line2.y2},
@@ -194,11 +175,11 @@ function LV:draw()
    love.graphics.setLineWidth(0.25)
    for _,l in pairs(self.debugLines.t1) do
       love.graphics.setColor(GREENSEA)
-      --love.graphics.line(l.x,l.y,l.x2,l.y2)
+      love.graphics.line(l.x,l.y,l.x2,l.y2)
    end
    for _,l in pairs(self.debugLines.t2) do
       love.graphics.setColor(MIDNIGHTBLUE)
-      --love.graphics.line(l.x,l.y,l.x2,l.y2)
+      love.graphics.line(l.x,l.y,l.x2,l.y2)
    end 
    for _,l in pairs(self.debugLines.t3) do
       love.graphics.setColor(DARKRED)

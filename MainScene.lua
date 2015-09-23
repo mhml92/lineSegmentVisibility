@@ -61,7 +61,15 @@ function MainScene:initialize()
             end
          end
       end
-      self.LV = LV:new(self.points,self.lines,self.p,self)
+      self.co = coroutine.create(function()
+      print("running with coroutine2")
+      print(self.co)
+      self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
+      self.LV:prettyPrint()
+      self.LV:addStartingPoints()
+      self.LV:runAlg()
+      end)
+      coroutine.resume(self.co)
    else
       msg = [[ 
       +-----------------------------------------+
@@ -132,7 +140,9 @@ function Scene:draw()
          v:draw()
       end
    end
-   self.LV:draw()
+   if self.LV then
+      self.LV:draw()
+   end
    self.cammgr:detach()
    self.menu:draw()
 end
@@ -143,7 +153,22 @@ end
 function Scene:keypressed(key)
    --quick hack, update lv on each step
    if key == "r" then
-      self.LV = LV:new(self.points,self.lines,self.p,self)
+      print("running with coroutine")
+      self.co = coroutine.create(function()
+      print("running with coroutine2")
+      print(self.co)
+      self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
+      self.LV:prettyPrint()
+      self.LV:addStartingPoints()
+      self.LV:runAlg()
+      end)
+      coroutine.resume(self.co)
+   end
+
+   if key == " " then
+      print (self.co)
+      print(coroutine.status(self.co))
+      coroutine.resume(self.co)
    end
 end
 
