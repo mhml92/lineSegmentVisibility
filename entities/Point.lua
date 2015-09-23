@@ -9,9 +9,13 @@ function Point:initialize(x,y,scene)
    self.point_size = POINT_SIZE
    self.marked = false
    self.markShown = false
+
    self.line = nil
    self.value = 0
-   self.visible = 0
+   self.visible = false
+
+   self.isStartPoint = false
+   self.angle = nil
 end
 
 function Point:setViewPoint()
@@ -27,19 +31,23 @@ function Point:getValue()
    return self.value
 end
 
-function Point:setVisible(val)
-   self.visible = val
+function Point:setVisible()
+   self.visible = true
 end
 
 function Point:isVisible()
-   return self.visible == 1
+   return self.visible
 end
 
-function Point:setValue(val)
-   self.value = val
-end
 
 function Point:draw()
+   if self.isStartPoint then
+      love.graphics.setColor(DEBUGVISIBLECOLOR)
+      --love.graphics.circle("fill", self.x, self.y, POINT_MARKED_SIZE, 16)
+      love.graphics.circle("line", self.x, self.y, POINT_MARKED_SIZE, 32)
+      love.graphics.print(self:__tostring(), self.x, self.y)
+
+   end
 
    if self.marked then
       love.graphics.setColor(POINT_MARKED_COLOR)
@@ -56,8 +64,8 @@ function Point:draw()
 
    if self.viewPoint then
       love.graphics.setColor(VIEW_POINT_COLOR)
-   elseif self:isVisible() then
-      love.graphics.setColor(EMERALD)
+   elseif self.visible then
+      love.graphics.setColor(DEBUGVISIBLECOLOR)
    else
       love.graphics.setColor(POINT_COLOR)
    end

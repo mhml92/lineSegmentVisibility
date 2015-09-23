@@ -24,19 +24,19 @@ function ActionManager:update(dt)
    for k,v in ipairs(self.scene.points) do
       v:setMarked(false)
       if closest ~= nil then
-         local d = Line.static:dist(mx,my,v.x,v.y)
+         local d = Vector.dist(mx,my,v.x,v.y)
          if d < dist then
             dist = d
             closest = v
          end
       else 
          closest = v
-         dist = Line.static:dist(mx,my,v.x,v.y)
+         dist = Vector.dist(mx,my,v.x,v.y)
       end
    end
    self.scene.p:setMarked(false)
    -- check if p is closer
-   local d = Line.static:dist(mx,my,self.scene.p.x,self.scene.p.y)
+   local d = Vector.dist(mx,my,self.scene.p.x,self.scene.p.y)
    if d < dist then
       dist = d
       closest = self.scene.p

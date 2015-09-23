@@ -5,6 +5,8 @@ local Point = require 'entities/Point'
 local Line = require 'entities/Line'
 local Grid = require 'entities/Grid'
 local ActionManager = require 'ActionManager'
+
+local RBTree = require 'RBTree/RBTree'
 local LV = require 'LineVisibility/LV'
 
 ---------------------------------------------------------------------
@@ -61,7 +63,6 @@ function MainScene:initialize()
             end
          end
       end
-      self.LV = LV:new(self.points,self.lines,self.p,self)
    else
       msg = [[ 
       +-----------------------------------------+
@@ -70,7 +71,7 @@ function MainScene:initialize()
       ]]
       print(msg)
    end
-
+   self.LV = LV:new(self.points,self.lines,self.p,self)
 end
 
 function Scene:defineLayers()
@@ -100,6 +101,7 @@ function Scene:update(dt)
          table.remove(self.entities, i);
       end
    end
+   self.LV = LV:new(self.points,self.lines,self.p,self)
    self.mouseDown["wd"] = nil
    self.mouseDown["wu"] = nil
 end
@@ -132,7 +134,8 @@ function Scene:draw()
          v:draw()
       end
    end
-   self.LV:draw()
+   self.LV.startSweepLine:draw()
+   --self.LV:draw()
    self.cammgr:detach()
    self.menu:draw()
 end
@@ -140,11 +143,12 @@ end
 ---------------------------------------------------------------------
 --                            FUNCTIONS
 ---------------------------------------------------------------------
+--[[
 function Scene:keypressed(key)
    --quick hack, update lv on each step
    if key == "r" then
       self.LV = LV:new(self.points,self.lines,self.p,self)
    end
 end
-
+]]
 return MainScene

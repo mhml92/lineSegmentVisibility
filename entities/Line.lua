@@ -3,51 +3,75 @@ local Line = Class("Line", Entity)
 function Line:initialize(p1,p2,scene)
    Entity:initialize(scene)
 
-   --normalize line
-   if p1.x > p2.x then
-      p1,p2 = p2,p1 --swap if p2.x is less than p1.x
-   else
-      if p1.x == p2.x then
-         if p1.y > p2.y then
-            p1,p2 = p2,p1 --swap
-         end
-      end
-   end
-
    self.p1 = p1
    self.p2 = p2
-   
-   self.layerName = "Line"
-
-   --fast references
    self.p1.line = self
-   self.p1.other = p2
    self.p2.line = self
-   self.p2.other = p1
+   self.startPoint = nil 
+   self.layerName = "Line"
+   self.visible = false
 
 end
 
 function Line:draw()
-   love.graphics.setColor(LINE_COLOR)
+   if self.visible then
+      love.graphics.setColor(DEBUGVISIBLECOLOR)
+   else
+      love.graphics.setColor(LINE_COLOR)
+   end
    love.graphics.setLineWidth(LINE_WIDTH)
    love.graphics.line( self.p1.x, self.p1.y, self.p2.x, self.p2.y)
    love.graphics.setColor(WHITE)
 end
 
-function Line:getValue()
-   local p = self.scene.p
-   print("line dist from p")
+function Line:setVisible()
+   self.visible = true
+   self.p1:setVisible()
+   self.p2:setVisible()
 end
 
-
-function Line.static:length(x,y)
-   return math.sqrt(x*x + y*y)
+function Line:getStartPoint()
+   return self.startPoint
 end
 
-function Line.static:dist(x1,y1,x2,y2)
-   return Line.static:length(x1-x2, y1-y2)
+function Line:init()
+   self.visible = false
+   self.p1.visible = false
+   self.p1.isStartPoint = false
+   self.p2.visible = false
+   self.p2.isStartPoint = false
+
+   if self.p1.angle < self.p2.angle then
+      self.p1.isStartPoint = true
+   elseif self.p1.angle > self.p2.angle then
+      self.p2.isStartPoint = true
+   else
+      if self.p1:getValue() < self.p2:getValue() then
+         self.p1.isStartPoint = true
+      else
+         self.p2.isStartPoint = true
+      end
+   end
+
+
+   if self.p1.isStartPoint then
+      self.startPoint = self.p1
+   else
+      self.startPoint = self.p2
+   end
 end
 
+function Line:reverseStartPoint()
+   if self.p1.isStartPoint then
+      self.startpoint = self.p2
+      self.p2.isStartPoint = true
+      self.p1.isStartPoint = false
+   else
+      self.startpoint = self.p1
+      self.p1.isStartPoint = true
+      self.p2.isStartPoint = false
+   end
+end
 
 return Line
 
