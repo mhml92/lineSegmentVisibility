@@ -113,68 +113,7 @@ function LV:setVisible()
 end
 
 
--- https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Intersection_of_two_lines
 function LV:intersection(l1,l2)
---[[
-   local px = l1.p1.x
-   local py = l1.p1.y
-   local qx = l2.p1.x
-   local qy = l2.p1.y
-
-   local rx = l1.p2.x - l1.p1.x
-   local ry = l1.p2.y - l1.p1.y
-
-   local	sx = l2.p2.x-l2.p1.x
-   local	sy = l2.p2.y-l2.p1.y
-
-   local crossRS = Vector.cross(rx,ry,sx,sy)
-   local qpx = qx - px
-   local qpy = qy - py
-
-   local crossQPS = Vector.cross(qpx,qpy,sx,sy);
-   local crossQPR = Vector.cross(qpx,qpy,rx,ry);
-
-
-   -- if the lines are parallel
-   print(crossRS)
-   if math.abs(crossRS) == 0 then
-      --if they are collinear
-      print(crossQPR, "qpr")
-      if math.abs(crossQPR) == 0.0 then
-         if l1.p1.value < l1.p2.value then
-            return l1.p1
-         else
-            return l1.p2
-         end
-      else
-         -- no intersection
-         print("ASAAFSEG")
-         return nil
-      end
-   end
-
-	local t = (crossQPS/crossRS)
-	local u = (crossQPR/crossRS)
-	--	(p + t r) x s = (q + u s) x s
-	local result1x = l1.p1.x+t*rx
-	local result1y = l1.p1.y+t*ry	
-
-
-	local crossResult1s = Vector.cross(result1x,result1y,sx,sy) 
-	local result2x = l2.p1.x+(u*sx)
-	local result2y = l2.p1.y+(u*sy)
-	local crossResult2s = Vector.cross(result2x,result2y,sx,sy) 
-   print(crossResult1s,crossResult2s,"<--- HERE", tostring(crossResult1s) == tostring(crossResult2s))
-	if tostring(crossResult1s) == tostring(crossResult2s) then
-		-- handle rounding errors
-		local newx = l1.p1.x + t*rx 
-		local newy = l1.p1.y + t*ry 
-		return Point:new(newx,newy,self.scene)
-	else
-      print("føææææsdvsdv")
-		return nil
-   end
-]]
    local x1,y1, 
    x2,y2, 
    x3,y3, 
