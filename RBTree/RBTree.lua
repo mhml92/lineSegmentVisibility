@@ -132,7 +132,7 @@ function RBTree:deleteNode(z)
       yOriginalColor = y.color
       x = y.right
       if y.p == z then
-         x.p = z
+         x.p = y
       else
          self:transplant(y,y.right)
          y.right = z.right

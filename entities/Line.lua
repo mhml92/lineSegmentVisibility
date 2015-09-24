@@ -41,15 +41,17 @@ function Line:init()
    self.p2.visible = false
    self.p2.isStartPoint = false
 
-   if self.p1.angle < self.p2.angle then
-      self.p1.isStartPoint = true
-   elseif self.p1.angle > self.p2.angle then
-      self.p2.isStartPoint = true
+   local p1,p2 = self.p1,self.p2
+
+   if p1.angle < p2.angle then
+      p1.isStartPoint = true
+   elseif p1.angle > p2.angle then
+      p2.isStartPoint = true
    else
-      if self.p1:getValue() < self.p2:getValue() then
-         self.p1.isStartPoint = true
+      if p1:getValue() < p2:getValue() then
+         p1.isStartPoint = true
       else
-         self.p2.isStartPoint = true
+         p2.isStartPoint = true
       end
    end
 

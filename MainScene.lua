@@ -134,8 +134,7 @@ function Scene:draw()
          v:draw()
       end
    end
-   self.LV.startSweepLine:draw()
-   --self.LV:draw()
+   self.LV:draw()
    self.cammgr:detach()
    self.menu:draw()
 end
