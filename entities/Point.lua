@@ -39,6 +39,10 @@ function Point:setValue(val)
    self.value = val
 end
 
+function Point:isFirst()
+   return self.number < self.other.number
+end
+
 function Point:draw()
 
    if self.marked then

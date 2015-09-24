@@ -60,33 +60,36 @@ function LV:addStartingPoints()
       --check if the staring points are on both sides of the initial line
       if p.x > self.p.x and p.other.x > self.p.x and 
          p.y < self.p.y and p.other.y > self.p.y then
-         
+         local l = point.l
+         l.node = self.status:insert(l,l)
+
          print(p,"Point added to initial status")
-         self:addToStatus(p)
-         p:setVisible(0)
       end
    end
 end
 
 
 function LV:checkCloser(point,test)
+   --if we have reached a null leaf return false
    if test == self.status.null then
-      print("test is null")
       return false
    end
 
-   if point ~= test:getKeyObject().line.p1 and point ~= test:getKeyObject().line.p2 then
+   --current test line
+   local tl = test:getKeyObject()
+   if point.line ~= tl then
       --create lines
       local l1 = {}
-      l1.x,l1.y = test:getKeyObject().line.p1.x,test:getKeyObject().line.p1.y
-      l1.x2,l1.y2 = test:getKeyObject().line.p2.x,test:getKeyObject().line.p2.y
+      l1.x,l1.y = tl.p1.x,tl.p1.y
+      l1.x2,l1.y2 = tl.p2.x,tl.p2.y
       table.insert(self.debugLines.t1, l1)
 
-      local l2 = {} 
+      local l2 = {}
       l2.x,l2.y = self.p.x,self.p.y --our main point
       l2.x2,l2.y2 = point.x,point.y -- our current point
       table.insert(self.debugLines.t2, l2)
 
+      print(I(l1),I(l2))
       if self:lineIntersection(l1,l2) then
          table.insert(self.debugLines.t3, l1)
          table.insert(self.debugLines.t3, l2)
@@ -96,22 +99,22 @@ function LV:checkCloser(point,test)
 
       return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
    else
-      local l = {} 
+      local l = {}
       l.x,l.y = self.p.x,self.p.y --our main point
       l.x2,l.y2 = point.x,point.y -- our current point
       table.insert(self.debugLines.t4, l)
       print("skipped")
       return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
    end
-   
-   return false
 end
 
 function LV:runAlg()
    for _,point in ipairs(self.points) do
-      
-      if not point.node then
-         point.node = self.status:insert(point,point)
+      local l = point.line
+      --if point is the first in the order
+      if point:isFirst() then
+         print("NUMBER FIRST: ",point.number)
+         l.node = self.status:insert(l,l)
       end
 
       --iterate all possible node below current point
@@ -122,28 +125,14 @@ function LV:runAlg()
       else
          point:setVisible(0)
       end
-      if point.node and point.other.node then
-         local n = self.status:getMin()
-         --[[if point.node == n or point.other.node == n then
-            point:setVisible(1)
-         end]]
-         self.status:deleteNode(point.node)
-         self.status:deleteNode(point.other.node)
-         point.node = nil
-         point.other.node = nil
-      end
 
-      --[[
-      local min = self.status:getMin()
-      if min ~= self.status.null then
-         if not min:getKeyObject():isVisible() then
-
-            if self:checkCloser(min:getKeyObject(),self.status.root) then
-               min:getKeyObject():setVisible(1)
-            end
-         end
+      --if point is the second in order
+      if not point:isFirst() then
+         print("NUMBER SECOND: ",point.number)
+         self.status:deleteNode(l.node)
+         --self.status:deleteNode(point.other.node)
+         l.node = nil
       end
-      ]]
 
       --allows step
       if self.coroutine then
