@@ -61,15 +61,14 @@ function MainScene:initialize()
             end
          end
       end
-      self.co = coroutine.create(function()
-      print("running with coroutine2")
+      --self.co = coroutine.create(function()
       print(self.co)
       self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
       self.LV:prettyPrint()
       self.LV:addStartingPoints()
       self.LV:runAlg()
-      end)
-      coroutine.resume(self.co)
+      --end)
+     -- coroutine.resume(self.co)
    else
       msg = [[ 
       +-----------------------------------------+
@@ -153,10 +152,7 @@ end
 function Scene:keypressed(key)
    --quick hack, update lv on each step
    if key == "r" then
-      print("running with coroutine")
       self.co = coroutine.create(function()
-      print("running with coroutine2")
-      print(self.co)
       self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
       self.LV:prettyPrint()
       self.LV:addStartingPoints()

@@ -15,9 +15,8 @@ function LV:initialize(points,lines,p,scene,co)
    self.status = RBTree:new()
    self.coroutine = co
 
-   self.debugLines = {t1={},t2={},t3={}}
+   self.debugLines = {t1={},t2={},t3={},t4={}}
    if self.coroutine then
-      print(I(self.lines))
       coroutine.yield()
    end
 
@@ -52,6 +51,7 @@ function LV:initialize(points,lines,p,scene,co)
    --dirty hack, add numbers to points
    for k,point in ipairs(self.points) do
       point.number = k
+      point:setVisible(0)
    end
 end
 
@@ -59,36 +59,27 @@ function LV:addStartingPoints()
    for _,p in ipairs(self.points) do
       --check if the staring points are on both sides of the initial line
       if p.x > self.p.x and p.other.x > self.p.x and 
-         p.y <= self.p.y and p.other.y >= self.p.y then
+         p.y < self.p.y and p.other.y > self.p.y then
          
          print(p,"Point added to initial status")
          self:addToStatus(p)
-         p:setVisible(1)
+         p:setVisible(0)
       end
    end
 end
 
-function LV:addToStatus(p)
-   print("creating new node")
-   p.node = Node:new(0,p,self.status.null,self.status.null,self.status.null)
-   
-   print("inserting new node")
-   self.status:insert(p.node)
-   
-   print("after insert")
-end
 
 function LV:checkCloser(point,test)
    if test == self.status.null then
-      --print("test is null")
+      print("test is null")
       return false
    end
 
-   if point ~= test:getObject().line.p1 and point ~= test:getObject().line.p2 then
+   if point ~= test:getKeyObject().line.p1 and point ~= test:getKeyObject().line.p2 then
       --create lines
-      local l1 = {} 
-      l1.x,l1.y = test:getObject().line.p1.x,test:getObject().line.p1.y
-      l1.x2,l1.y2 = test:getObject().line.p2.x,test:getObject().line.p2.y
+      local l1 = {}
+      l1.x,l1.y = test:getKeyObject().line.p1.x,test:getKeyObject().line.p1.y
+      l1.x2,l1.y2 = test:getKeyObject().line.p2.x,test:getKeyObject().line.p2.y
       table.insert(self.debugLines.t1, l1)
 
       local l2 = {} 
@@ -99,12 +90,16 @@ function LV:checkCloser(point,test)
       if self:lineIntersection(l1,l2) then
          table.insert(self.debugLines.t3, l1)
          table.insert(self.debugLines.t3, l2)
-
+         print("FOUND INTERSECTION!")
          return true
       end
 
       return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
    else
+      local l = {} 
+      l.x,l.y = self.p.x,self.p.y --our main point
+      l.x2,l.y2 = point.x,point.y -- our current point
+      table.insert(self.debugLines.t4, l)
       print("skipped")
       return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
    end
@@ -116,31 +111,45 @@ function LV:runAlg()
    for _,point in ipairs(self.points) do
       
       if not point.node then
-         self:addToStatus(point)
+         point.node = self.status:insert(point,point)
       end
 
-      if self.coroutine then
-         coroutine.yield()
-      end
-      
       --iterate all possible node below current point
       local found = self:checkCloser(point,self.status.root)
 
       if not found then
-         print("point should be visible")
          point:setVisible(1)
       else
          point:setVisible(0)
-         print("point should not be visible")
       end
       if point.node and point.other.node then
-         if point.node == point.other.node then
-            print("WRONG!!!!!!!")
-            return false
-         end
-         self.status:delete(point.node)
-         self.status:delete(point.other.node)
+         local n = self.status:getMin()
+         --[[if point.node == n or point.other.node == n then
+            point:setVisible(1)
+         end]]
+         self.status:deleteNode(point.node)
+         self.status:deleteNode(point.other.node)
+         point.node = nil
+         point.other.node = nil
       end
+
+      --[[
+      local min = self.status:getMin()
+      if min ~= self.status.null then
+         if not min:getKeyObject():isVisible() then
+
+            if self:checkCloser(min:getKeyObject(),self.status.root) then
+               min:getKeyObject():setVisible(1)
+            end
+         end
+      end
+      ]]
+
+      --allows step
+      if self.coroutine then
+         coroutine.yield()
+      end
+
    end
 end
 
@@ -181,6 +190,10 @@ function LV:draw()
       love.graphics.setColor(MIDNIGHTBLUE)
       love.graphics.line(l.x,l.y,l.x2,l.y2)
    end 
+   for _,l in pairs(self.debugLines.t4) do
+      love.graphics.setColor(YELLOW)
+      love.graphics.line(l.x,l.y,l.x2,l.y2)
+   end
    for _,l in pairs(self.debugLines.t3) do
       love.graphics.setColor(DARKRED)
       love.graphics.line(l.x,l.y,l.x2,l.y2)
