@@ -161,6 +161,16 @@ function Scene:keypressed(key)
       coroutine.resume(self.co)
    end
 
+   if key == "b" then
+      --self.co = coroutine.create(function()
+      self.LV = LV:new(self.points,self.lines,self.p,self)
+      self.LV:prettyPrint()
+      self.LV:addStartingPoints()
+      self.LV:runAlg()
+      --end)
+      --coroutine.resume(self.co)
+   end   
+
    if key == " " then
       print (self.co)
       print(coroutine.status(self.co))

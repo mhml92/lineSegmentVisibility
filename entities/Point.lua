@@ -43,6 +43,10 @@ function Point:isFirst()
    return self.number < self.other.number
 end
 
+function Point:getFirst()
+   return self.number < self.other.number and self or self.other
+end
+
 function Point:draw()
 
    if self.marked then

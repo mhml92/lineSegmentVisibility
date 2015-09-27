@@ -52,6 +52,7 @@ function LV:initialize(points,lines,p,scene,co)
    for k,point in ipairs(self.points) do
       point.number = k
       point:setVisible(0)
+      point.line:calcDistToP(p)
    end
 end
 
@@ -60,7 +61,7 @@ function LV:addStartingPoints()
       --check if the staring points are on both sides of the initial line
       if p.x > self.p.x and p.other.x > self.p.x and 
          p.y < self.p.y and p.other.y > self.p.y then
-         local l = point.l
+         local l = p.line
          l.node = self.status:insert(l,l)
 
          print(p,"Point added to initial status")
@@ -89,7 +90,7 @@ function LV:checkCloser(point,test)
       l2.x2,l2.y2 = point.x,point.y -- our current point
       table.insert(self.debugLines.t2, l2)
 
-      print(I(l1),I(l2))
+      --print(I(l1),I(l2))
       if self:lineIntersection(l1,l2) then
          table.insert(self.debugLines.t3, l1)
          table.insert(self.debugLines.t3, l2)
@@ -113,7 +114,6 @@ function LV:runAlg()
       local l = point.line
       --if point is the first in the order
       if point:isFirst() then
-         print("NUMBER FIRST: ",point.number)
          l.node = self.status:insert(l,l)
       end
 
@@ -128,8 +128,13 @@ function LV:runAlg()
 
       --if point is the second in order
       if not point:isFirst() then
-         print("NUMBER SECOND: ",point.number)
          self.status:deleteNode(l.node)
+         
+         local closest = self.status:getMin():getKeyObject()
+         if closest and closest.p1 then
+            print("setting " .. closest.p1.number .. " as visible")
+            closest:getFirst():setVisible(1)
+         end
          --self.status:deleteNode(point.other.node)
          l.node = nil
       end
@@ -144,6 +149,7 @@ end
 
 --http://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
 function LV:lineIntersection(line, line2)
+
    --local tl = {x=self.x-self.velx,y=self.y-self.vely,x2=self.x,y2=self.y+9}
    local a,b,c,d = 
    {X=line2.x,Y=line2.y},
@@ -192,6 +198,11 @@ end
 function LV:prettyPrint()
    for k,v in ipairs(self.points) do
       print("P["..k.."]",v.x,v.y,Vector.angleTo(self.p.x,self.p.y,v.x,v.y),v:getValue())
+   end
+
+   for k,v in ipairs(self.lines) do
+      io.write("p1[num]"..v.p1.number.."\tp2[num]"..v.p2.number.."\t")
+      v:calcDistToP(self.p)
    end
 end
 

@@ -24,3 +24,6 @@ print("local l1, l2 = {x=-10,x2=10,y=0,y2=0},{x=0,x2=0,y=-10,y2=10}", lineInters
 
 local l1, l2 = {x=20,x2=40,y=0,y2=0},{x=0,x2=0,y=-10,y2=10}
 print("local l1, l2 = {x=-10,x2=10,y=0,y2=0},{x=0,x2=0,y=-10,y2=10}", lineIntersection(l1,l2))
+
+local l1, l2 = {x=20,x2=40,y=0,y2=0},{x=-20,x2=60,y=0,y2=0}
+print("local l1, l2 = {x=-10,x2=10,y=0,y2=0},{x=20,x2=40,y=0,y2=0}", lineIntersection(l1,l2))
