@@ -7,37 +7,22 @@ function RBTree:initialize()
    self.BLACK = 1
 
    --CREATE NULL ROOT
-   self.null = Node:new(self.BLACK,math.inf,nil,nil,nil,nil)
+   self.null = Node:new(self.BLACK,nil,nil,nil,nil)
    self.root = self.null
 end
 
-function RBTree:insert(key,value)
-   local n = Node:new(RED,key,value,self.null,self.null,self.null)
+function RBTree:insert(obj)
+   local n = Node:new(self.RED,obj,self.null,self.null,self.null)
+   obj.node = n
    self:insertNode(n) 
 end
 
-function RBTree:delete(keyObject)
-   local n = self:findNode(keyObject)
+function RBTree:delete(obj)
+   local n = obj.node
+   obj.node = nil
    if n ~= nil then
       self:deleteNode(n)
-   end
-end
-
-function RBTree:findNode(keyObject)
-   local n = self.root
-   while true do 
-      local koVal,nVal = keyObject:getValue(),n:getKey()
-      if nVal == koVal then 
-         return n
-      end
-
-      if koVal < nVal then
-         if n.left == self.null then return nil end
-         n = n.left
-      else
-         if n.right == self.null then return nil end
-         n = n.right
-      end
+   else
    end
 end
 
@@ -203,7 +188,7 @@ function RBTree:insertNode(z)
    local x = self.root
    while x ~= self.null do
       y = x
-      if z:getKey() < x:getKey() then
+      if z:isLessThan(x) then
          x = x.left
       else
          x = x.right 
@@ -211,9 +196,8 @@ function RBTree:insertNode(z)
    end
    z.p = y
    if y == self.null then
-      print("setting root")
       self.root = z
-   elseif z:getKey() < y:getKey() then
+   elseif z:isLessThan(y) then
       y.left = z
    else
       y.right = z

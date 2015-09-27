@@ -83,7 +83,9 @@ function ActionManager:add(mx,my,closest,dist)
          self.scene)
          self.scene:addEntity(self.addLineB)
          table.insert(self.scene.points,self.addLineB)
-         self.scene:addEntity(Line:new(self.addLineA,self.addLineB,self.scene))
+         local l = Line:new(self.addLineA,self.addLineB,self.scene)
+         self.scene:addEntity(l)
+         table.insert(self.scene.lines,l)
       end
    elseif self.addLineB then
       self.addLineB.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X

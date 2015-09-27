@@ -84,24 +84,24 @@ end
 --										UPDATE
 ---------------------------------------------------------------------
 function Scene:update(dt)
+   self.LV:update(dt)
    local mx,my = love.mouse.getPosition()
    self.actmgr:update(dt)
    self.cammgr:update(mx,my,dt)
    self.menu:update(dt)
-   for i, v in ipairs(self.entities) do
-      if v:isActive() then
-         v:update(dt)
-      end
-   end
+
    for i=#self.entities, 1, -1 do
       if self.entities[i]:isAlive() == false then
          if self.entities[i].body then
             self.entities[i].body:destroy()
          end
          table.remove(self.entities, i);
+      else
+         if self.entities[i]:isActive() then
+            self.entities[i]:update(dt)
+         end
       end
    end
-   self.LV = LV:new(self.points,self.lines,self.p,self)
    self.mouseDown["wd"] = nil
    self.mouseDown["wu"] = nil
 end
@@ -129,12 +129,12 @@ function Scene:draw()
    end)
 
    self.cammgr:attach()	
+   self.LV:draw()
    for i, v in ipairs(self.entities) do
       if v:isActive() then
          v:draw()
       end
    end
-   self.LV:draw()
    self.cammgr:detach()
    self.menu:draw()
 end
