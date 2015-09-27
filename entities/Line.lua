@@ -28,6 +28,9 @@ function Line:initialize(p1,p2,scene)
    self.value = 0
 end
 
+function Line:swapPoints()
+   self.p1.number,self.p2.number = self.p2.number,self.p1.number
+end
 --[[
 def GetClosestPoint(A, B, P)
 

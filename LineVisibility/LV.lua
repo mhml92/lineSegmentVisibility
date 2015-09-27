@@ -63,7 +63,8 @@ function LV:addStartingPoints()
          p.y < self.p.y and p.other.y > self.p.y then
          local l = p.line
          l.node = self.status:insert(l,l)
-
+         --swap points
+         l:swapPoints()
          print(p,"Point added to initial status")
       end
    end
@@ -76,9 +77,13 @@ function LV:checkCloser(point,test)
       return false
    end
 
+   print("looking in point", point.number)
+
    --current test line
    local tl = test:getKeyObject()
    if point.line ~= tl then
+      print("checking against ",tl.p1.number)
+      print("checking against ",tl.p2.number)
       --create lines
       local l1 = {}
       l1.x,l1.y = tl.p1.x,tl.p1.y
@@ -109,6 +114,27 @@ function LV:checkCloser(point,test)
    end
 end
 
+function LV:checkPointAndSetVisible(point, startNode)
+   local found = self:checkCloser(point,startNode)
+
+   if not found then
+      point:setVisible(1)
+   else
+      point:setVisible(0)
+   end
+end
+
+function LV:recursiveCheckPointsCloser(startNode)
+   if startNode == self.status.null then
+      return
+   end
+
+   self:checkPointAndSetVisible(startNode:getKeyObject():getFirst(), startNode)
+
+   self:recursiveCheckPointsCloser(startNode.left)
+   self:recursiveCheckPointsCloser(startNode.right)
+end
+
 function LV:runAlg()
    for _,point in ipairs(self.points) do
       local l = point.line
@@ -117,22 +143,32 @@ function LV:runAlg()
          l.node = self.status:insert(l,l)
       end
 
+      print(point.line.node)
+      print(point.line.node:getKey())
+      print("left",point.line.node.left == self.status.null, "right", point.line.node.right == self.status.null)
       --iterate all possible node below current point
-      local found = self:checkCloser(point,self.status.root)
+      
+      self:checkPointAndSetVisible(point, self.status.root)
+      --[[local found = self:checkCloser(point,self.status.root)
 
       if not found then
          point:setVisible(1)
       else
          point:setVisible(0)
-      end
+      end]]
 
       --if point is the second in order
       if not point:isFirst() then
          self.status:deleteNode(l.node)
          
+
+         --self:recursiveCheckPointsCloser(self.status.root)
+
+         
          local closest = self.status:getMin():getKeyObject()
+         
          if closest and closest.p1 then
-            print("setting " .. closest.p1.number .. " as visible")
+            print("setting " .. closest:getFirst().number .. " as visible")
             closest:getFirst():setVisible(1)
          end
          --self.status:deleteNode(point.other.node)
@@ -143,7 +179,6 @@ function LV:runAlg()
       if self.coroutine then
          coroutine.yield()
       end
-
    end
 end
 
