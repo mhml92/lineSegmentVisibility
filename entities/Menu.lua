@@ -14,7 +14,7 @@ function Menu:initialize(x,y,scene)
    self:addButton(resmgr:getImg("move.png"),"MOVE",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("add.png"),"ADD",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("remove.png"),"REMOVE",function(m) self.scene.actmgr:changeMode(m) end)
-   self:addButton(resmgr:getImg("snat p.png"),"TOGGLESNAP",function(m) self.scene.actmgr:toggleSnap()  end)
+   self:addButton(resmgr:getImg("snap.png"),"TOGGLESNAP",function(m) self.scene.actmgr:toggleSnap()  end)
 end
 
 function Menu:addButton(image,m, func)
