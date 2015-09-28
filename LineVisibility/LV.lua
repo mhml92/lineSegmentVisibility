@@ -30,9 +30,6 @@ function LV:initialize(points,lines,p,scene,co)
 
    table.sort(self.points, function(p1,p2)
       local v1,v2 = Vector.angleTo(self.p.x-p1.x,self.p.y-p1.y), Vector.angleTo(self.p.x-p2.x,self.p.y-p2.y)
-      --normalie to start from zero
-      --v1 = v1 < 0 and 1-v1 or v1 
-      --v2 = v2 < 0 and 1-v2 or v2
 
       if v1 < v2 then
          return true
@@ -59,13 +56,23 @@ end
 function LV:addStartingPoints()
    for _,p in ipairs(self.points) do
       --check if the staring points are on both sides of the initial line
-      if p.x > self.p.x and p.other.x > self.p.x and 
+      if (p.x > self.p.x or p.other.x > self.p.x) and 
          p.y < self.p.y and p.other.y > self.p.y then
-         local l = p.line
-         l.node = self.status:insert(l,l)
-         --swap points
-         l:swapPoints()
-         print(p,"Point added to initial status")
+         
+         --check if points intersect the horizontal line of P
+         local a = (p.other.x-p.x)/(p.other.y-p.y)
+         local b = p.y-a*p.x
+
+         --now check if line intersects our P point i.e. y+P.y = 0
+         local yintersect = (-b+self.p.y)/a-self.p.x
+
+         if yintersect > 0 then
+            local l = p.line
+            l.node = self.status:insert(l,l)
+            --swap points
+            l:swapPoints()
+            print(p.number,"Point added to initial status")
+         end
       end
    end
 end
@@ -148,7 +155,9 @@ function LV:runAlg()
       print("left",point.line.node.left == self.status.null, "right", point.line.node.right == self.status.null)
       --iterate all possible node below current point
       
-      self:checkPointAndSetVisible(point, self.status.root)
+      local min = self.status:getMin()
+      print("MINIMUM IS ", min:getKeyObject().p1.number)
+      self:checkPointAndSetVisible(point, min)
       --[[local found = self:checkCloser(point,self.status.root)
 
       if not found then

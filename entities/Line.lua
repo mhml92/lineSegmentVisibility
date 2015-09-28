@@ -54,7 +54,7 @@ def GetClosestPoint(A, B, P)
 
 end
 ]]
-function Line:calcDistToP(P)
+--[[function Line:calcDistToP(P)
    local A,B = self.p1,self.p2
    a_to_p = {P.x - A.x, P.y - A.y}     --# Storing vector A->P
    a_to_b = {B.x - A.x, B.y - A.y}     --# Storing vector A->B
@@ -64,9 +64,36 @@ function Line:calcDistToP(P)
 
    local t = atp_dot_atb / atb2
 
+
+
    self.value=Vector.dist(A.x + a_to_b[1]*t,A.y + a_to_b[2]*t,P.x,P.y)
-   print(P.x,P.y,self.p1.x,self.p1.y,self.p2.x,self.p2.y,"x => ",A.x + a_to_b[1]*t,":y => ",A.y + a_to_b[2]*t,"dist"..self.value)
+
+   print(P.x,P.y,A.x + a_to_b[1]*t, A.y + a_to_b[2]*t,"dist"..self.value)
+end]]
+
+function Line:calcDistToP(P)
+  local B,A = self.p1,self.p2
+  local AP,AB = {P.x-A.x,P.y-A.y},{B.x-A.x,B.y-A.y}
+
+  local ABlenghtSquared = Vector.len2(AB[1],AB[2])
+  local ABdotAP = Vector.dot(AP[1],AP[2],AB[1],AB[2])
+  local distance = ABdotAP/ABlenghtSquared
+
+  if distance < 0 then
+    --A is closest
+    self.value = Vector.dist(A.x,A.y,P.x,P.y)  
+  elseif distance > 1 then 
+    --B is closest
+    self.value = Vector.dist(B.x,B.y,P.x,P.y)
+  else
+    self.value = Vector.dist(A.x+AB[1]*distance,A.y+AB[2]*distance,P.x,P.y) 
+  end
+
+
+   print(P.x,P.y,"dist"..self.value)
 end
+
+
 
 function Line:draw()
    love.graphics.setColor(LINE_COLOR)
