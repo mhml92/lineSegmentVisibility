@@ -79,6 +79,32 @@ function Line:reverseStartPoint()
    self.p2.isStartPoint = false
 end
 
+function Line:kill()
+   local points = self.scene.points
+   local lines = self.scene.lines
+
+   self.p1:kill()
+   self.p2:kill()
+   self.alive = false
+
+   local n = 0
+   for k,v in ipairs(points) do
+      if v == self.p1 or v == self.p2 then
+         table.remove(points,k)
+         n = n+1
+         if n == 2 then
+            break
+         end
+      end
+   end
+   for k,v in ipairs(lines) do
+      if v == self then
+         table.remove(lines,k)
+         break
+      end
+   end
+end
+
 function Line:__tostring()
    return "num: " .. self.num
 end

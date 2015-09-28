@@ -24,7 +24,6 @@ function love.load()
    resmgr = ResourceManager:new()
    self.scene = MainScene:new(self.resmgr)
    love.graphics.setBackgroundColor(BG)
-   --	self.scene = MenuScene:new()
 end
 
 function love.update(dt)

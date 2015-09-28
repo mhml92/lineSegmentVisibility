@@ -92,6 +92,7 @@ function LV:setSweepLine(x,y)
 end
 
 function LV:distToP(point)
+
    local P = self.p
    return Vector.dist(P.x,P.y,point.x,point.y)
 end
@@ -119,8 +120,13 @@ function LV:setVisible()
          local op1,op2 = minN.obj.p1,minN.obj.p2 
          local dx1,dy1 = Vector.normalize(op1.x-P.x,op1.y-P.y)
          local dx2,dy2 = Vector.normalize(op2.x-P.x,op2.y-P.y)
+         
+         local cam = self.scene.cammgr.cam 
          local w,h = love.graphics.getDimensions()
-         local viewDist = math.sqrt(w*w + h*h)       
+         local wx0,wy0 = cam:worldCoords(0,0)
+         local wxMax,wyMax = cam:worldCoords(w,h)
+
+         local viewDist = w*w      
 
          table.insert(self.quads,{
             op1.x,

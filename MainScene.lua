@@ -64,6 +64,10 @@ function MainScene:initialize()
          end
       end
    else
+      self.p = Point(0,0,self)
+      self:addEntity(self.p)
+      self.p:setViewPoint()
+      self.cammgr:setCenter(self.p.x,self.p.y)
       msg = [[ 
       +-----------------------------------------+
       | No input given - Build some yourself :) | 

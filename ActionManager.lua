@@ -37,7 +37,7 @@ function ActionManager:update(dt)
    self.scene.p:setMarked(false)
    -- check if p is closer
    local d = Vector.dist(mx,my,self.scene.p.x,self.scene.p.y)
-   if d < dist then
+   if not dist or d < dist then
       dist = d
       closest = self.scene.p
    end
@@ -99,7 +99,19 @@ function ActionManager:add(mx,my,closest,dist)
    end
 
 end
-function ActionManager:remove(mx,my,closest,dist) end
+function ActionManager:remove(mx,my,closest,dist)
+
+   if not self.scene.mouseDown["l"] then self:markClosest(closest,dist) end
+   -- grab for something
+   if self.scene.mouseDown["l"] and self.grabbedObject == nil and not self.mouseDown then
+      -- if close enogh to grap
+      if dist < POINT_GRAB_DIST then
+         closest.line:kill()
+      else
+         self.mouseDown = true
+      end
+   end
+end
 
 function ActionManager:move(mx,my,closest,dist) 
    if not self.scene.mouseDown["l"] then self:markClosest(closest,dist) end

@@ -16,14 +16,20 @@ function Node:isLessThan(n)
 
    local l1 = self.obj
    local l2 = n.obj
-   local sl = LV:getSweepLine()--LV:getSweepLine(l1.p1.x,l1.p1.y)
+   
+   local sl = LV:getSweepLine()
+   -- intersection point of 'this' and sweepline
    local is1 = Geo.intersection(sl,self.obj)
    if not is1 then 
-      return false end
-   local is = Geo.intersection(sl,l2)
-   if not is then 
+      print("is1 doesn't intersect sweepline")
       return false 
    end
+   local is = Geo.intersection(sl,l2)
+   if not is then 
+      print("is1 doesn't intersect sweepline")
+      return false 
+   end
+   --print(is1.x,is1.y,is.x,is.y)
    if LV:distToP(is1) < LV:distToP(is) then
       return true
    else
