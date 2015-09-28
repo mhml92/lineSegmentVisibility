@@ -11,6 +11,7 @@ function ActionManager:initialize(scene)
    self.mouseReleased = true
    self.addLineA = nil
    self.addLineB = nil
+   self.snap = true
 end
 
 function ActionManager:update(dt)
@@ -64,22 +65,26 @@ function ActionManager:markClosest(closest,dist)
    end
 end
 
+function ActionManager:toggleSnap()
+   self.snap = not self.snap
+end
+
+
 function ActionManager:add(mx,my,closest,dist) 
    if not self.scene.mouseDown["l"] then self.mouseReleased = true end
 
    if self.scene.mouseDown["l"] and self.mouseReleased and not self.addLineA then
       self.mouseReleased = false 
       if not self.addLineA then
+         mx,my = self:toGrid(mx,my)
          self.addLineA = Point:new(
-         math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X,
-         math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y,
+         mx,my,
          self.scene)
          self.scene:addEntity(self.addLineA)
          table.insert(self.scene.points,self.addLineA)
 
          self.addLineB =  Point:new(
-         math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X,
-         math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y,
+         mx,my,
          self.scene)
          self.scene:addEntity(self.addLineB)
          table.insert(self.scene.points,self.addLineB)
@@ -88,8 +93,9 @@ function ActionManager:add(mx,my,closest,dist)
          table.insert(self.scene.lines,l)
       end
    elseif self.addLineB then
-      self.addLineB.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X
-      self.addLineB.y = math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y
+      self.addLineB.x,self.addLineB.y = self:toGrid(mx,my)     
+      --self.addLineB.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X
+      --self.addLineB.y = math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y
 
       if self.scene.mouseDown["l"] and self.mouseReleased then
          self.mouseReleased = false 
@@ -127,8 +133,9 @@ function ActionManager:move(mx,my,closest,dist)
       -- drag something
    end
    if self.scene.mouseDown["l"] and self.grabbedObject ~= nil then
-      self.grabbedObject.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X
-      self.grabbedObject.y = math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y
+      self.grabbedObject.x,self.grabbedObject.y = self:toGrid(mx,my)     
+--self.grabbedObject.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X
+      --self.grabbedObject.y = math.floor((my/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y
    end
 
    if not self.scene.mouseDown["l"] and self.grabbedObject then
@@ -136,5 +143,13 @@ function ActionManager:move(mx,my,closest,dist)
    end
 
 end
+function ActionManager:toGrid(x,y)
+   if self.snap then
+      return math.floor((x/GRID_X+(GRID_X/2)/GRID_X))*GRID_X, math.floor((y/GRID_Y+(GRID_Y/2)/GRID_Y))*GRID_Y
+   else
+      return x,y
+   end
+end
+
 
 return ActionManager
