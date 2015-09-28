@@ -29,7 +29,6 @@ function Node:isLessThan(n)
       print("is1 doesn't intersect sweepline")
       return false 
    end
-   --print(is1.x,is1.y,is.x,is.y)
    if LV:distToP(is1) < LV:distToP(is) then
       return true
    else

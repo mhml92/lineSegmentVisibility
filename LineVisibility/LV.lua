@@ -91,10 +91,15 @@ function LV:setSweepLine(x,y)
    self.sweepLine = nsl 
 end
 
-function LV:distToP(point)
+function LV:distToP(pointp)
 
    local P = self.p
-   return Vector.dist(P.x,P.y,point.x,point.y)
+
+   if not pointp then
+      print("error")
+      pointp = Point:new(0,0,self.scene)
+   end
+   return Vector.dist(P.x,P.y,pointp.x,pointp.y)
 end
 
 function LV:angleToP(point)
