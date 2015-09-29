@@ -19,12 +19,14 @@ function MainScene:initialize()
    self.p = nil
    self.points = {}
    self.lines = {}
+   self.drawDebugLines = true
 
-   self:addEntity(Grid:new(self)) 
+   self:addEntity(Grid:new(self))
    -----------------------------------------------------------------
    -- READ INPUT FILE
    -----------------------------------------------------------------
    inputArg = arg[2] or nil
+   outputArg = arg[3] or nil
    print(inputArg)
    if inputArg then
       io.input(inputArg)
@@ -61,14 +63,22 @@ function MainScene:initialize()
             end
          end
       end
-      --self.co = coroutine.create(function()
-      print(self.co)
+
+      --run LV
       self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
-      self.LV:prettyPrint()
       self.LV:addStartingPoints()
       self.LV:runAlg()
-      --end)
-     -- coroutine.resume(self.co)
+
+      if outputArg then
+         --output all visible lines and exit program
+         io.output(outputArg)
+         for _,line in ipairs(self.lines) do
+            if line.p1:isVisible() or line.p2:isVisible() then
+               io.write(line.p1.x..","..line.p1.y..";"..line.p2.x..","..line.p2.y.."\n")
+            end
+         end
+         love.event.quit()
+      end
    else
       msg = [[ 
       +-----------------------------------------+
@@ -139,8 +149,10 @@ function Scene:draw()
          v:draw()
       end
    end
-   if self.LV then
-      self.LV:draw()
+   if self.drawDebugLines then
+      if self.LV then
+         self.LV:draw()
+      end
    end
    self.cammgr:detach()
    self.menu:draw()
@@ -172,9 +184,9 @@ function Scene:keypressed(key)
    end   
 
    if key == " " then
-      print (self.co)
-      print(coroutine.status(self.co))
-      coroutine.resume(self.co)
+      if self.co then
+         coroutine.resume(self.co)
+      end
    end
 end
 

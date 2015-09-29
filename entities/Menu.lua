@@ -14,6 +14,8 @@ function Menu:initialize(x,y,scene)
    self:addButton(resmgr:getImg("move.png"),"MOVE",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("add.png"),"ADD",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("remove.png"),"REMOVE",function(m) self.scene.actmgr:changeMode(m) end)
+   self:addButton(resmgr:getImg("remove.png"),"DEBUGLINES",function(m) self.scene.drawDebugLines = not self.scene.drawDebugLines end)
+   
 end
 
 function Menu:addButton(image,m, func)

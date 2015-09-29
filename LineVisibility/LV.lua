@@ -5,8 +5,6 @@ local Node = require 'RBTree/Node'
 local Point = require 'entities/Point'
 local Line = require 'entities/Line'
 
-local I = require('inspect')
-
 function LV:initialize(points,lines,p,scene,co)
    self.scene = scene
    self.p = p
@@ -15,7 +13,7 @@ function LV:initialize(points,lines,p,scene,co)
    self.status = RBTree:new()
    self.coroutine = co
 
-   self.debugLines = {t1={},t2={},t3={},t4={}}
+   self.debugLines = {red={},yellow={}}
    if self.coroutine then
       coroutine.yield()
    end
@@ -23,8 +21,6 @@ function LV:initialize(points,lines,p,scene,co)
    --add distance for each point
    for _,p in ipairs(self.points) do
       --also reset nodes
-      p.node = nil
-
       p:setValue(Vector.dist(self.p.x,self.p.y,p.x,p.y))
    end
 
@@ -63,83 +59,45 @@ function LV:addStartingPoints()
          local a = (p.other.x-p.x)/(p.other.y-p.y)
          local b = p.y-a*p.x
 
-         --now check if line intersects our P point i.e. y+P.y = 0
-         local yintersect = (-b+self.p.y)/a-self.p.x
+         --now check if line intersects our P point's horizontal line i.e. y+P.y = 0
+         local xintersect = (-b+self.p.y)/a-self.p.x
 
-         if yintersect > 0 then
+         if xintersect > 0 then
             local l = p.line
             l.node = self.status:insert(l,l)
             --swap points
             l:swapPoints()
-            print(p.number,"Point added to initial status")
          end
       end
    end
 end
 
 
-function LV:checkCloser(point,test)
-   --if we have reached a null leaf return false
-   if test == self.status.null then
-      return false
-   end
-
-   print("looking in point", point.number)
-
+function LV:checkPointClosest(point,test)
    --current test line
    local tl = test:getKeyObject()
    if point.line ~= tl then
-      print("checking against ",tl.p1.number)
-      print("checking against ",tl.p2.number)
       --create lines
-      local l1 = {}
-      l1.x,l1.y = tl.p1.x,tl.p1.y
+      local l1 = {} --the closest line
+      l1.x,l1.y = tl.p1.x,tl.p1.y 
       l1.x2,l1.y2 = tl.p2.x,tl.p2.y
-      table.insert(self.debugLines.t1, l1)
 
       local l2 = {}
       l2.x,l2.y = self.p.x,self.p.y --our main point
       l2.x2,l2.y2 = point.x,point.y -- our current point
-      table.insert(self.debugLines.t2, l2)
 
-      --print(I(l1),I(l2))
       if self:lineIntersection(l1,l2) then
-         table.insert(self.debugLines.t3, l1)
-         table.insert(self.debugLines.t3, l2)
-         print("FOUND INTERSECTION!")
+         table.insert(self.debugLines.red, l2)
          return true
       end
-
-      return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
-   else
-      local l = {}
-      l.x,l.y = self.p.x,self.p.y --our main point
-      l.x2,l.y2 = point.x,point.y -- our current point
-      table.insert(self.debugLines.t4, l)
-      print("skipped")
-      return self:checkCloser(point,test.left) or self:checkCloser(point,test.right)
    end
-end
+   --add yellow line
+   local l = {}
+   l.x,l.y = self.p.x,self.p.y --our main point
+   l.x2,l.y2 = point.x,point.y -- our current point
+   table.insert(self.debugLines.yellow, l)
 
-function LV:checkPointAndSetVisible(point, startNode)
-   local found = self:checkCloser(point,startNode)
-
-   if not found then
-      point:setVisible(1)
-   else
-      point:setVisible(0)
-   end
-end
-
-function LV:recursiveCheckPointsCloser(startNode)
-   if startNode == self.status.null then
-      return
-   end
-
-   self:checkPointAndSetVisible(startNode:getKeyObject():getFirst(), startNode)
-
-   self:recursiveCheckPointsCloser(startNode.left)
-   self:recursiveCheckPointsCloser(startNode.right)
+   return false
 end
 
 function LV:runAlg()
@@ -150,38 +108,23 @@ function LV:runAlg()
          l.node = self.status:insert(l,l)
       end
 
-      print(point.line.node)
-      print(point.line.node:getKey())
-      print("left",point.line.node.left == self.status.null, "right", point.line.node.right == self.status.null)
-      --iterate all possible node below current point
-      
-      local min = self.status:getMin()
-      print("MINIMUM IS ", min:getKeyObject().p1.number)
-      self:checkPointAndSetVisible(point, min)
-      --[[local found = self:checkCloser(point,self.status.root)
-
+      --check if point is closer
+      local found = self:checkPointClosest(point,self.status:getMin())
       if not found then
          point:setVisible(1)
       else
          point:setVisible(0)
-      end]]
+      end
 
       --if point is the second in order
       if not point:isFirst() then
          self.status:deleteNode(l.node)
-         
+         l.node = nil --unset lines node in status
 
-         --self:recursiveCheckPointsCloser(self.status.root)
-
-         
          local closest = self.status:getMin():getKeyObject()
-         
          if closest and closest.p1 then
-            print("setting " .. closest:getFirst().number .. " as visible")
             closest:getFirst():setVisible(1)
          end
-         --self.status:deleteNode(point.other.node)
-         l.node = nil
       end
 
       --allows step
@@ -215,25 +158,12 @@ function LV:lineIntersection(line, line2)
 end
 
 function LV:draw()
-   --self.sweepLine:draw()
-
-
-   --print(I(self.debugLines))
-   --love.graphics.setLi
    love.graphics.setLineWidth(0.25)
-   for _,l in pairs(self.debugLines.t1) do
-      love.graphics.setColor(GREENSEA)
-      love.graphics.line(l.x,l.y,l.x2,l.y2)
-   end
-   for _,l in pairs(self.debugLines.t2) do
-      love.graphics.setColor(MIDNIGHTBLUE)
-      love.graphics.line(l.x,l.y,l.x2,l.y2)
-   end 
-   for _,l in pairs(self.debugLines.t4) do
+   for _,l in pairs(self.debugLines.yellow) do
       love.graphics.setColor(YELLOW)
       love.graphics.line(l.x,l.y,l.x2,l.y2)
    end
-   for _,l in pairs(self.debugLines.t3) do
+   for _,l in pairs(self.debugLines.red) do
       love.graphics.setColor(DARKRED)
       love.graphics.line(l.x,l.y,l.x2,l.y2)
    end
