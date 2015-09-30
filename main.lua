@@ -1,10 +1,11 @@
+
 math.random = love.math.random
 require 'GLOBALS'
 DEBUG = true
 Class = require 'middleclass/middleclass'
 Scene = require 'Scene'
 Entity = require 'Entity'
-Vector = require 'hump/vector-light'
+Vector = require 'vector-light'
 ResourceManager = require 'ResourceManager'
 
 local MainScene = require 'MainScene'
@@ -14,7 +15,7 @@ time.fdt = 1/60 --fixed delta time
 time.accum = 0
 
 
-local self = {}
+self = {}
 
 
 function love.load()
@@ -24,6 +25,7 @@ function love.load()
    resmgr = ResourceManager:new()
    self.scene = MainScene:new(self.resmgr)
    love.graphics.setBackgroundColor(BG)
+   
 end
 
 function love.update(dt)

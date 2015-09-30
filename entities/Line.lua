@@ -39,6 +39,7 @@ function Line:init()
    self.p1.isStartPoint = false
    self.p2.visible = false
    self.p2.isStartPoint = false
+   self.node = nil
 
    local p1,p2 = self.p1,self.p2
    if p1.angleToP > p2.angleToP then
@@ -52,19 +53,7 @@ function Line:init()
          p2.isStartPoint = true
       end
    end
---[[
-   if p1.angleToP < p2.angleToP then
-      p1.isStartPoint = true
-   elseif  p2.angleToP < p1.angleToP then
-      p2.isStartPoint = true
-   else
-      if p1.distToP < p2.distToP then
-         p1.isStartPoint = true
-      else
-         p2.isStartPoint = true
-      end
-   end
-   ]]
+
    -- p1 is always startpoint
    if self.p2.isStartPoint then
       self:reverseStartPoint()
@@ -106,7 +95,7 @@ function Line:kill()
 end
 
 function Line:__tostring()
-   return "num: " .. self.num
+   return "num: " .. self.num .. " p1: " .. self.p1.x .. ",".. self.p1.y .. " p2: ".. self.p2.x .. "," .. self.p2.y
 end
 
 return Line

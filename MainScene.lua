@@ -1,3 +1,4 @@
+require "socket"
 local MainScene = Class("MainScene", Scene)
 local Menu = require 'entities/Menu'
 local CameraManager = require 'CameraManager'

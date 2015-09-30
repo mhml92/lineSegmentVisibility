@@ -145,6 +145,7 @@ function RBTree:transplant(u,v)
 end
 
 function RBTree:insertFixup(z)
+   local y
    while z.p.color == self.RED do
       if z.p == z.p.p.left then
          y = z.p.p.right

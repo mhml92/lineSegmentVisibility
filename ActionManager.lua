@@ -69,6 +69,26 @@ function ActionManager:toggleSnap()
    self.snap = not self.snap
 end
 
+function ActionManager:dumpToFile()
+   local P = self.scene.p
+   local lines = self.scene.lines
+   file = io.open("dm819-output.txt","w")
+   io.output(file)
+   -- write P
+   local Pstr = P.x/GRID_X ..","..P.y/GRID_Y.."\n"
+   print(Pstr)
+   io.write("# view point P\n")
+   io.write(Pstr)
+
+   io.write("# Lines\n")
+   for _,l in ipairs(lines) do
+      local Lstr = l.p1.x/GRID_X .. "," .. l.p1.y/GRID_Y ..";"..l.p2.x/GRID_X .. ","..l.p2.y/GRID_Y .."\n"
+      print(Lstr)
+      io.write(Lstr)
+   end
+   io.close(file)
+end
+
 
 function ActionManager:add(mx,my,closest,dist) 
    if not self.scene.mouseDown["l"] then self.mouseReleased = true end

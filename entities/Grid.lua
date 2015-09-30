@@ -30,7 +30,7 @@ function Grid:draw()
       love.graphics.line(dx,uly,dx,bry)
       dx = dx + GRID_X 
    end
-   dy = uly - (uly % GRID_Y)
+   local dy = uly - (uly % GRID_Y)
    while dy <= bry do
       if (dy/GRID_Y) % 10 == 0 then
          if dy == 0 then 

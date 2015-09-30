@@ -27,8 +27,8 @@ function LV:update(dt)
    -- set distance, angle for each point
    local P = self.p
    for _,p in ipairs(self.points) do
-      p.distToP = self:distToP(p)
-      p.angleToP = self:angleToP(p)
+      p.distToP = Geo.round(self:distToP(p))
+      p.angleToP = Geo.round(self:angleToP(p))
       if self.maxDist < p.distToP then
          self.maxDist = p.distToP
       end
@@ -50,15 +50,33 @@ function LV:update(dt)
    end
 
    table.sort(self.points,function(p1,p2)
+      if p1.id == p2.id then 
+         return false
+      end
       if p1.angleToP > p2.angleToP then
          return true
       elseif p1.angleToP < p2.angleToP then
          return false
       else 
          if p1.isStartPoint and p2.isStartPoint then
-            return p1.distToP < p2.distToP
+            if p1.distToP < p2.distToP then
+               return true
+            elseif p1.distToP > p2.distToP then
+               return false
+            else
+               
+               local l1,l2 = p1.line,p2.line
+               return Geo.isLeftOf(l2,l1.p2)
+            end
          elseif not p1.isStartPoint and not p2.isStartPoint then
-            return p1.distToP > p2.distToP
+            if  p1.distToP > p2.distToP then
+               return true
+            elseif p1.distToP < p2.distToP then
+               return false
+            else
+               local l1,l2 = p1.line,p2.line
+               return not  Geo.isLeftOf(l2,l1.p1)
+            end
          elseif p1.isStartPoint and not p2.isStartPoint then
             return true
          elseif not p1.isStartPoint and p2.isStartPoint then
@@ -66,12 +84,10 @@ function LV:update(dt)
          end
       end
    end)
-   --[[
    --dirty hack, add numbers to points
    for k,point in ipairs(self.points) do
-      point.number = k
+   point.number = k
    end
-   ]]
    self:setVisible()
 end
 
@@ -87,7 +103,6 @@ function LV:setSweepLine(x,y)
    dx,dy = Vector.normalize(dx,dy)
    dx,dy = P.x+(dx*(self.maxDist*2)),P.y+(dy*(self.maxDist*2))
    local nsl = Line:new(P,Point:new(dx,dy,self.scene),self.scene)
-   table.insert(self.debugSL,nsl)
    self.sweepLine = nsl 
 end
 
@@ -95,10 +110,28 @@ function LV:distToP(pointp)
 
    local P = self.p
 
-   if not pointp then
+   --[[
+   if not pointp or not pointp.x or not pointp.y then
       print("error")
-      pointp = Point:new(0,0,self.scene)
+      print(pointp)
+--[[
+   if p1.angleToP < p2.angleToP then
+      p1.isStartPoint = true
+   elseif  p2.angleToP < p1.angleToP then
+      p2.isStartPoint = true
+   else
+      if p1.distToP < p2.distToP then
+         p1.isStartPoint = true
+      else
+         p2.isStartPoint = true
+      end
    end
+      --print(pointp)
+   irint(((l.p1.x - l.p2.x)*(p.y - l.p2.y) - (l.p1.y - l.p2.y)*(p.x - l.p2.x))>0)
+   print("----------------")
+      pointp = Point:new(P.x+1,P.y,self.scene)
+   end
+   ]]
    return Vector.dist(P.x,P.y,pointp.x,pointp.y)
 end
 
@@ -119,13 +152,15 @@ function LV:setVisible()
 
       local minN = self.status:getMin()
       if minN ~= nil then
+         if not minN.obj.visible then
+
          minN.obj:setVisible()
          -- create a quad for drawing
          local P = self.p
          local op1,op2 = minN.obj.p1,minN.obj.p2 
          local dx1,dy1 = Vector.normalize(op1.x-P.x,op1.y-P.y)
          local dx2,dy2 = Vector.normalize(op2.x-P.x,op2.y-P.y)
-         
+
          local cam = self.scene.cammgr.cam 
          local w,h = love.graphics.getDimensions()
          local wx0,wy0 = cam:worldCoords(0,0)
@@ -143,19 +178,20 @@ function LV:setVisible()
             op1.x+(dx1*viewDist),
             op1.y+(dy1*viewDist)
          })
+         end
       end
    end
 end
 
 function LV:draw()
-      love.graphics.setColor(LIGHTSILVER)
+   love.graphics.setColor(LIGHTSILVER)
    for k,v in ipairs(self.quads) do
       love.graphics.polygon("fill",v)
    end
-      love.graphics.setColor(WHITE)
+   love.graphics.setColor(WHITE)
    --[[
    for k,v in ipairs(self.debugSL) do
-      v:draw()
+   v:draw()
    end
    ]]
 end
