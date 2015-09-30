@@ -14,8 +14,31 @@ function Menu:initialize(x,y,scene)
    self:addButton(resmgr:getImg("move.png"),"MOVE",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("add.png"),"ADD",function(m) self.scene.actmgr:changeMode(m) end)
    self:addButton(resmgr:getImg("remove.png"),"REMOVE",function(m) self.scene.actmgr:changeMode(m) end)
-   self:addButton(resmgr:getImg("remove.png"),"DEBUGLINES",function(m) self.scene.drawDebugLines = not self.scene.drawDebugLines end)
-   
+   self:addButton(resmgr:getImg("debuglines.png"),"DEBUGLINES",function(m) self.scene.drawDebugLines = not self.scene.drawDebugLines end)
+   self:addButton(resmgr:getImg("step.png"),"STEP",function(m) self.scene:startStep() end)
+   self:addButton(resmgr:getImg("dostep.png"),"DOSTEP",function(m) self.scene:doStep() end)
+   self:addButton(resmgr:getImg("runonce.png"),"RUNONCE",function(m) self.scene:run() end)
+   self:addButton(resmgr:getImg("runeachframe.png"),"RUNEACHFRAME",function(m) self.scene.runeachframe = not self.scene.runeachframe end)
+   self:addButton(resmgr:getImg("screenshot.png"),"SCREENSHOT",function(m) 
+      local screenshot = love.graphics.newScreenshot()
+      local name = os.time() .. '.png'
+      screenshot:encode(name)
+      print("screenshot printed to " ..name)
+      print("Can normally be found in ~/.local/share/love/lineSegmentVisibility/")
+   end)
+   self:addButton(resmgr:getImg("savepoints.png"),"SAVEPOINTS",function(m) 
+      --output all visible lines and exit program
+      local name = "output-"..os.time()..".txt"
+      local f = io.output(name)
+      io.write("#point\n"..self.scene.p.x/GRID_X..","..self.scene.p.y/GRID_Y.."\n\n")
+
+      for _,line in ipairs(self.scene.lines) do
+         io.write(line.p1.x/GRID_X..","..line.p1.y/GRID_Y..";"..line.p2.x/GRID_X..","..line.p2.y/GRID_Y.."\n")
+      end
+      f:close()
+      print("File saved to " .. name)
+   end)
+   self:addButton(resmgr:getImg("sauron.png"),"SAURON",function(m) self.scene.sauronMode = not self.scene.sauronMode end)
 end
 
 function Menu:addButton(image,m, func)
@@ -51,11 +74,13 @@ function Menu:draw()
          love.graphics.setColor(BUTTON_COLOR)
       end
       love.graphics.rectangle("fill",btn.x,btn.y,BUTTON_ZISE,BUTTON_ZISE)
-      if btn.mode == currentMode then
+      if btn.mode == currentMode or self.scene.drawDebugLines and btn.mode == "DEBUGLINES" 
+         or btn.mode == "STEP" and self.scene.co and coroutine.status(self.scene.co) == "suspended" 
+         or self.scene.runeachframe and btn.mode == "RUNEACHFRAME" or self.scene.sauronMode and btn.mode == "SAURON"
+         then
          love.graphics.setColor(OFFWHITE)
       else
          love.graphics.setColor(TURQOUISE)
-         --love.graphics.setColor(WETASPHALT)
       end
       local scale = BUTTON_ZISE/btn.img:getWidth()
       love.graphics.draw(btn.img,btn.x, btn.y,0,scale,scale)

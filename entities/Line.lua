@@ -88,9 +88,6 @@ function Line:calcDistToP(P)
   else
     self.value = Vector.dist(A.x+AB[1]*distance,A.y+AB[2]*distance,P.x,P.y) 
   end
-
-
-   print(P.x,P.y,"dist"..self.value)
 end
 
 

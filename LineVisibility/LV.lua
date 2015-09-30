@@ -14,14 +14,11 @@ function LV:initialize(points,lines,p,scene,co)
    self.coroutine = co
 
    self.debugLines = {red={},yellow={}}
-   if self.coroutine then
-      coroutine.yield()
-   end
-
    --add distance for each point
    for _,p in ipairs(self.points) do
       --also reset nodes
       p:setValue(Vector.dist(self.p.x,self.p.y,p.x,p.y))
+      p.line.node = nil
    end
 
    table.sort(self.points, function(p1,p2)
@@ -51,24 +48,33 @@ end
 
 function LV:addStartingPoints()
    for _,p in ipairs(self.points) do
+      --skip if line is already in the view
+      if p.line.node then
+         goto continue
+      end
       --check if the staring points are on both sides of the initial line
-      if (p.x > self.p.x or p.other.x > self.p.x) and 
-         p.y < self.p.y and p.other.y > self.p.y then
-         
-         --check if points intersect the horizontal line of P
-         local a = (p.other.x-p.x)/(p.other.y-p.y)
+      if (p.x >= self.p.x or p.other.x >= self.p.x) and 
+         p.y <= self.p.y and p.other.y > self.p.y then
+
+         --standard gym math         
+         local a = (p.y-p.other.y)/(p.x-p.other.x)
          local b = p.y-a*p.x
 
          --now check if line intersects our P point's horizontal line i.e. y+P.y = 0
          local xintersect = (-b+self.p.y)/a-self.p.x
 
-         if xintersect > 0 then
+
+         --if x intersects the self.p.x axis or if the slope is infinite
+         if xintersect >= 0 or p.x-p.other.x == 0  then
+
             local l = p.line
             l.node = self.status:insert(l,l)
             --swap points
             l:swapPoints()
          end
       end
+
+      ::continue::
    end
 end
 
@@ -110,8 +116,9 @@ function LV:runAlg()
 
       --check if point is closer
       local found = self:checkPointClosest(point,self.status:getMin())
+      
       if not found then
-         point:setVisible(1)
+        point:setVisible(1)
       else
          point:setVisible(0)
       end
@@ -166,17 +173,6 @@ function LV:draw()
    for _,l in pairs(self.debugLines.red) do
       love.graphics.setColor(DARKRED)
       love.graphics.line(l.x,l.y,l.x2,l.y2)
-   end
-end
-
-function LV:prettyPrint()
-   for k,v in ipairs(self.points) do
-      print("P["..k.."]",v.x,v.y,Vector.angleTo(self.p.x,self.p.y,v.x,v.y),v:getValue())
-   end
-
-   for k,v in ipairs(self.lines) do
-      io.write("p1[num]"..v.p1.number.."\tp2[num]"..v.p2.number.."\t")
-      v:calcDistToP(self.p)
    end
 end
 

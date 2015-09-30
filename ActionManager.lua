@@ -83,7 +83,9 @@ function ActionManager:add(mx,my,closest,dist)
          self.scene)
          self.scene:addEntity(self.addLineB)
          table.insert(self.scene.points,self.addLineB)
-         self.scene:addEntity(Line:new(self.addLineA,self.addLineB,self.scene))
+         local l = Line:new(self.addLineA,self.addLineB,self.scene)
+         self.scene:addEntity(l)
+         table.insert(self.scene.lines, l)
       end
    elseif self.addLineB then
       self.addLineB.x = math.floor((mx/GRID_X+(GRID_X/2)/GRID_X))*GRID_X
@@ -97,7 +99,43 @@ function ActionManager:add(mx,my,closest,dist)
    end
 
 end
-function ActionManager:remove(mx,my,closest,dist) end
+function ActionManager:remove(mx,my,closest,dist) 
+   if not self.scene.mouseDown["l"] then self:markClosest(closest,dist) end
+
+   print("test remove")
+   if self.scene.mouseDown["l"] then
+      print("test remove 2")
+      
+      -- if close enogh to grap
+      if dist < POINT_GRAB_DIST then
+         self.grabbedObject = closest
+      end
+
+      local p1,p2
+      for _,p in ipairs(self.scene.points) do
+         if p == self.grabbedObject then
+            p1 = p
+            p2 = p.other
+            break
+         end
+      end
+
+      for i=#self.scene.lines,1,-1 do
+         if self.scene.lines[i].p1 == p1 or self.scene.lines[i].p1 == p2 then
+            self.scene.lines[i]:kill()
+            table.remove(self.scene.lines, i)
+         end
+      end
+
+      for i=#self.scene.points,1,-1 do
+         if self.scene.points[i] == p1 or self.scene.points[i] == p2 then
+            self.scene.points[i]:kill()
+            table.remove(self.scene.points, i)
+         end
+      end
+      -- drag something
+   end
+end
 
 function ActionManager:move(mx,my,closest,dist) 
    if not self.scene.mouseDown["l"] then self:markClosest(closest,dist) end
@@ -109,6 +147,7 @@ function ActionManager:move(mx,my,closest,dist)
       else
          self.mouseDown = true
       end
+
 
       -- drag something
    end

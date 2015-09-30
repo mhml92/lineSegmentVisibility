@@ -6,6 +6,7 @@ local Line = require 'entities/Line'
 local Grid = require 'entities/Grid'
 local ActionManager = require 'ActionManager'
 local LV = require 'LineVisibility/LV'
+local Fire = require 'entities.sauronfire'
 
 ---------------------------------------------------------------------
 --										INITIALIZE
@@ -20,6 +21,9 @@ function MainScene:initialize()
    self.points = {}
    self.lines = {}
    self.drawDebugLines = true
+   self.runeachframe = false
+   self.sauronMode = false
+   self.fire = Fire:new(self)
 
    self:addEntity(Grid:new(self))
    -----------------------------------------------------------------
@@ -27,7 +31,6 @@ function MainScene:initialize()
    -----------------------------------------------------------------
    inputArg = arg[2] or nil
    outputArg = arg[3] or nil
-   print(inputArg)
    if inputArg then
       io.input(inputArg)
       while true do
@@ -72,9 +75,11 @@ function MainScene:initialize()
       if outputArg then
          --output all visible lines and exit program
          io.output(outputArg)
+         io.write("#point\n"..self.p.x/GRID_X..","..self.p.y/GRID_Y.."\n\n")
+
          for _,line in ipairs(self.lines) do
             if line.p1:isVisible() or line.p2:isVisible() then
-               io.write(line.p1.x..","..line.p1.y..";"..line.p2.x..","..line.p2.y.."\n")
+               io.write(line.p1.x/GRID_X..","..line.p1.y/GRID_Y..";"..line.p2.x/GRID_X..","..line.p2.y/GRID_Y.."\n")
             end
          end
          love.event.quit()
@@ -101,6 +106,7 @@ end
 ---------------------------------------------------------------------
 function Scene:update(dt)
    local mx,my = love.mouse.getPosition()
+   self.fire:update(dt)
    self.actmgr:update(dt)
    self.cammgr:update(mx,my,dt)
    self.menu:update(dt)
@@ -119,14 +125,15 @@ function Scene:update(dt)
    end
    self.mouseDown["wd"] = nil
    self.mouseDown["wu"] = nil
+   if self.runeachframe then
+      self:run()
+   end
 end
 
 ---------------------------------------------------------------------
 --										DRAW
 ---------------------------------------------------------------------
 function Scene:draw()
-
-
    -- sort entities by their layer
    table.sort(self.entities,
    function(a,b) 
@@ -154,6 +161,15 @@ function Scene:draw()
          self.LV:draw()
       end
    end
+   if self.sauronMode then
+      love.graphics.setColor(255,255,255)
+      love.graphics.draw(resmgr:getImg("sauron.png"),self.p.x,self.p.y,0,0.25,0.25,96/2-3,94/2-3)
+      for _,l in pairs(self.lines) do
+         if l.p1:isVisible() or l.p2:isVisible() then
+            self.fire:draw(l)
+         end
+      end
+   end
    self.cammgr:detach()
    self.menu:draw()
 end
@@ -162,31 +178,31 @@ end
 --                            FUNCTIONS
 ---------------------------------------------------------------------
 function Scene:keypressed(key)
-   --quick hack, update lv on each step
-   if key == "r" then
-      self.co = coroutine.create(function()
+end
+
+function Scene:run()
+   self.LV = LV:new(self.points,self.lines,self.p,self,nil)
+   self.LV:addStartingPoints()
+   self.LV:runAlg()
+end
+
+--create step coroutine
+function Scene:startStep()
+   self.co = coroutine.create(function()
       self.LV = LV:new(self.points,self.lines,self.p,self,self.co)
-      self.LV:prettyPrint()
-      self.LV:addStartingPoints()
-      self.LV:runAlg()
-      end)
-      coroutine.resume(self.co)
-   end
-
-   if key == "b" then
-      --self.co = coroutine.create(function()
-      self.LV = LV:new(self.points,self.lines,self.p,self)
-      self.LV:prettyPrint()
-      self.LV:addStartingPoints()
-      self.LV:runAlg()
-      --end)
-      --coroutine.resume(self.co)
-   end   
-
-   if key == " " then
-      if self.co then
-         coroutine.resume(self.co)
+      if self.coroutine then
+         coroutine.yield()
       end
+      self.LV:addStartingPoints()
+      self.LV:runAlg()
+   end)
+   coroutine.resume(self.co)
+end
+
+--do a step
+function Scene:doStep()
+   if self.co then
+      coroutine.resume(self.co)
    end
 end
 
