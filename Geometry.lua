@@ -34,7 +34,7 @@ local function intersection(l1,l2)
       return nil
    end
 
-   local tolerance = 0.000001
+   local tolerance = 0.0
    --case 3: intersection!
    local t = round(cross(q.x-p.x,q.y-p.y,s.x,s.y))/rxs
    local u = round(qpr/rxs)

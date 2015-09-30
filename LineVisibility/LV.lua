@@ -12,7 +12,6 @@ function LV:initialize(points,lines,p,scene)
    self.points = points
    self.lines = lines
    self.sweepLine = nil
-   self.debugSL = {}
    self.quads = {}
 
 end
@@ -21,7 +20,6 @@ function LV:update(dt)
    self.status = RBTree:new()
    self.maxDist = 0
 
-   self.debugSL = {}
    self.quads = {}
 
    -- set distance, angle for each point
@@ -153,47 +151,41 @@ function LV:setVisible()
       local minN = self.status:getMin()
       if minN ~= nil then
          if not minN.obj.visible then
+            minN.obj:setVisible()
+            -- create a quad for drawing
+            local P = self.p
+            local op1,op2 = minN.obj.p1,minN.obj.p2 
+            local dx1,dy1 = Vector.normalize(op1.x-P.x,op1.y-P.y)
+            local dx2,dy2 = Vector.normalize(op2.x-P.x,op2.y-P.y)
 
-         minN.obj:setVisible()
-         -- create a quad for drawing
-         local P = self.p
-         local op1,op2 = minN.obj.p1,minN.obj.p2 
-         local dx1,dy1 = Vector.normalize(op1.x-P.x,op1.y-P.y)
-         local dx2,dy2 = Vector.normalize(op2.x-P.x,op2.y-P.y)
+            local cam = self.scene.cammgr.cam 
+            local w,h = love.graphics.getDimensions()
+            local wx0,wy0 = cam:worldCoords(0,0)
+            local wxMax,wyMax = cam:worldCoords(w,h)
 
-         local cam = self.scene.cammgr.cam 
-         local w,h = love.graphics.getDimensions()
-         local wx0,wy0 = cam:worldCoords(0,0)
-         local wxMax,wyMax = cam:worldCoords(w,h)
+            local viewDist = w*w      
 
-         local viewDist = w*w      
-
-         table.insert(self.quads,{
-            op1.x,
-            op1.y,
-            op2.x,
-            op2.y,
-            op2.x+(dx2*viewDist),
-            op2.y+(dy2*viewDist),
-            op1.x+(dx1*viewDist),
-            op1.y+(dy1*viewDist)
-         })
+            table.insert(self.quads,{
+               op1.x,
+               op1.y,
+               op2.x,
+               op2.y,
+               op2.x+(dx2*viewDist),
+               op2.y+(dy2*viewDist),
+               op1.x+(dx1*viewDist),
+               op1.y+(dy1*viewDist)
+            })
          end
       end
    end
 end
 
 function LV:draw()
-   love.graphics.setColor(LIGHTSILVER)
+   love.graphics.setColor(SHADOW_COLOR)
    for k,v in ipairs(self.quads) do
       love.graphics.polygon("fill",v)
    end
    love.graphics.setColor(WHITE)
-   --[[
-   for k,v in ipairs(self.debugSL) do
-   v:draw()
-   end
-   ]]
 end
 
 return LV

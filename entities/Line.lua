@@ -16,7 +16,7 @@ end
 
 function Line:draw()
    if self.visible then
-      love.graphics.setColor(DEBUGVISIBLECOLOR)
+      love.graphics.setColor(LINE_COLOR_VISIBLE)
    else
       love.graphics.setColor(LINE_COLOR)
    end

@@ -22,8 +22,10 @@ function MainScene:initialize()
    self.p = nil
    self.points = {}
    self.lines = {}
+   self.grid = Grid:new(self)
+   self.easterBG = false
 
-   self:addEntity(Grid:new(self)) 
+   self:addEntity(self.grid) 
    -----------------------------------------------------------------
    -- READ INPUT FILE
    -----------------------------------------------------------------
@@ -77,9 +79,45 @@ function MainScene:initialize()
       print(msg)
    end
    self.LV = LV:new(self.points,self.lines,self.p,self)
+   self:easter(inputArg)
 end
 
-function Scene:defineLayers()
+function MainScene:easter(file)
+
+	local t={} ; i=1
+	for str in string.gmatch(file, "([^".."/".."]+)") do
+		t[i] = str
+		i = i + 1
+	end
+   if t[#t] == "asteroids.txt" then
+      print("HAPPY EASTER!!!!")
+      self.actmgr.snap = false
+      self.easterBG = true
+      self.grid:setActive(false)
+      POINT_MARKED_COLOR = OFFWHITE 
+      POINT_COLOR_VISIBLE = WHITE
+      POINT_COLOR = DARKGREY--OFFWHITE--OFFWHITE--ASBESTOS--OFFBLACK--DARKBLUE--LIGHTBLUE
+      POINT_LINE_COLOR = DARKGREY--OFFBLACK--WHITE--OFFBLACK--DARKBLUE
+
+
+      VIEW_POINT_COLOR = OFFWHITE 
+      VIEW_POINT_LINE_COLOR = OFFWHITE
+      --------------------------------
+      --  LINE SEGMENT 
+      --------------------------------
+      LINE_COLOR = DARKGREY--OFFWHITE--BLACK
+      LINE_COLOR_VISIBLE = WHITE--ASBESTOS--OFFBLACK--DARKBLUE 
+
+      --------------------------------
+      -- GRID
+      --------------------------------
+      GRID_LINE_COLOR = OFFBLACK
+
+      SHADOW_COLOR = BLACK--WETASPHALT
+   end
+end
+
+function MainScene:defineLayers()
 
    self:addLayer("Grid")
    self:addLayer("Line")
@@ -88,7 +126,7 @@ end
 ---------------------------------------------------------------------
 --										UPDATE
 ---------------------------------------------------------------------
-function Scene:update(dt)
+function MainScene:update(dt)
    self.LV:update(dt)
    local mx,my = love.mouse.getPosition()
    self.actmgr:update(dt)
@@ -114,8 +152,12 @@ end
 ---------------------------------------------------------------------
 --										DRAW
 ---------------------------------------------------------------------
-function Scene:draw()
-
+function MainScene:draw()
+   if self.easterBG then
+      love.graphics.setColor(OFFBLACK)
+      love.graphics.rectangle("fill", 0, 0, love.window.getDimensions() )
+      love.graphics.setColor(WHITE)
+   end
 
    -- sort entities by their layer
    table.sort(self.entities,

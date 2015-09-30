@@ -15,7 +15,7 @@ time.fdt = 1/60 --fixed delta time
 time.accum = 0
 
 
-self = {}
+local self = {}
 
 
 function love.load()
@@ -24,16 +24,17 @@ function love.load()
    love.graphics.setScissor( 0, 0, w, h)
    resmgr = ResourceManager:new()
    self.scene = MainScene:new(self.resmgr)
-   love.graphics.setBackgroundColor(BG)
+
+   love.graphics.setBackgroundColor(OFFWHITE)
    
 end
 
 function love.update(dt)
    time.accum = time.accum + dt 
-   while time.accum >= time.fdt do
+   if time.accum >= time.fdt then
       self.scene:update(time.fdt)
       self.scene:resetInput() -- fixes uncatched mouse and keyboard input
-      time.accum = time.accum - time.fdt
+      time.accum = 0
    end
 end
 

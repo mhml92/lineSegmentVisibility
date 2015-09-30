@@ -62,7 +62,7 @@ function Point:draw()
    if self.viewPoint then
       love.graphics.setColor(VIEW_POINT_COLOR)
    elseif self.visible then
-      love.graphics.setColor(DEBUGVISIBLECOLOR)
+      love.graphics.setColor(POINT_COLOR_VISIBLE)
    else
       love.graphics.setColor(POINT_COLOR)
    end
