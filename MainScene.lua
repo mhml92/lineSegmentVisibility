@@ -20,7 +20,7 @@ function MainScene:initialize()
    self.p = nil
    self.points = {}
    self.lines = {}
-   self.drawDebugLines = true
+   self.drawDebugLines = false
    self.runeachframe = false
    self.sauronMode = false
    self.fire = Fire:new(self)
@@ -91,8 +91,12 @@ function MainScene:initialize()
       +-----------------------------------------+
       ]]
       print(msg)
+      self.p = Point:new(0,0,self)
+      table.insert(self.points,p)
+      self:addEntity(self.p)
+      self.p:setViewPoint()
+      self.cammgr:setCenter(self.p.x,self.p.y)
    end
-
 end
 
 function Scene:defineLayers()

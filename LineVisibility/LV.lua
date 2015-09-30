@@ -5,6 +5,8 @@ local Node = require 'RBTree/Node'
 local Point = require 'entities/Point'
 local Line = require 'entities/Line'
 
+I = require("inspect")
+
 function LV:initialize(points,lines,p,scene,co)
    self.scene = scene
    self.p = p
@@ -114,24 +116,22 @@ function LV:runAlg()
          l.node = self.status:insert(l,l)
       end
 
-      --check if point is closer
-      local found = self:checkPointClosest(point,self.status:getMin())
-      
-      if not found then
-        point:setVisible(1)
+      local closest = self.status:getMin():getKeyObject()
+      if closest == point.line then
+         table.insert(self.debugLines.yellow, {x=self.p.x,y=self.p.y,x2=point.x,y2=point.y})
       else
-         point:setVisible(0)
+         table.insert(self.debugLines.red, {x=self.p.x,y=self.p.y,x2=point.x,y2=point.y})
       end
+      closest:getFirst():setVisible(1)
 
       --if point is the second in order
       if not point:isFirst() then
          self.status:deleteNode(l.node)
-         l.node = nil --unset lines node in status
+      end
 
-         local closest = self.status:getMin():getKeyObject()
-         if closest and closest.p1 then
-            closest:getFirst():setVisible(1)
-         end
+      local closest = self.status:getMin():getKeyObject()
+      if closest ~= nil then
+         closest:getFirst():setVisible(1)
       end
 
       --allows step
