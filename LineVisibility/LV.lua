@@ -24,7 +24,8 @@ function LV:initialize(points,lines,p,scene,co)
    end
 
    table.sort(self.points, function(p1,p2)
-      local v1,v2 = Vector.angleTo(self.p.x-p1.x,self.p.y-p1.y), Vector.angleTo(self.p.x-p2.x,self.p.y-p2.y)
+      local v1 = Vector.angleTo(self.p.x-p1.x,self.p.y-p1.y)
+      local v2 = Vector.angleTo(self.p.x-p2.x,self.p.y-p2.y)
 
       if v1 < v2 then
          return true
@@ -111,12 +112,13 @@ end
 function LV:runAlg()
    for _,point in ipairs(self.points) do
       local l = point.line
-      --if point is the first in the order
+      --if point is the first of the two points in the line
       if point:isFirst() then
          l.node = self.status:insert(l,l)
       end
 
       local closest = self.status:getMin():getKeyObject()
+      --only used for illustration purpose
       if closest == point.line then
          table.insert(self.debugLines.yellow, {x=self.p.x,y=self.p.y,x2=point.x,y2=point.y})
       else

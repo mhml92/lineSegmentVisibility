@@ -124,7 +124,7 @@ function Scene:update(dt)
          if self.entities[i].body then
             self.entities[i].body:destroy()
          end
-         table.remove(self.entities, i);
+         table.remove(self.entities, i)
       end
    end
    self.mouseDown["wd"] = nil

@@ -44,14 +44,13 @@ function Point:isFirst()
 end
 
 function Point:getFirst()
-   return self.number < self.other.number and self or self.other
+   return self:isFirst() and self or self.other
 end
 
 function Point:draw()
 
    if self.marked then
       love.graphics.setColor(POINT_MARKED_COLOR)
-      --love.graphics.circle("fill", self.x, self.y, POINT_MARKED_SIZE, 16)
       love.graphics.circle("line", self.x, self.y, POINT_MARKED_SIZE, 32)
       love.graphics.print(self:__tostring(), self.x, self.y)
    end

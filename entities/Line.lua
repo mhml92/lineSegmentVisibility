@@ -3,7 +3,7 @@ local Line = Class("Line", Entity)
 function Line:initialize(p1,p2,scene)
    Entity:initialize(scene)
 
-   --normalize line
+   --make sure p1 comes before p2 in the coordinate system
    if p1.x > p2.x then
       p1,p2 = p2,p1 --swap if p2.x is less than p1.x
    else
@@ -90,8 +90,6 @@ function Line:calcDistToP(P)
   end
 end
 
-
-
 function Line:draw()
    love.graphics.setColor(LINE_COLOR)
    if self.p1:isVisible() or self.p2:isVisible() then
@@ -106,7 +104,6 @@ function Line:draw()
 end
 
 function Line:getValue()
-   local p = self.scene.p
    --return point distance of that is closest of the 2 points
    return self.value
 end
