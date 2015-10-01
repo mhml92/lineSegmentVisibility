@@ -96,8 +96,8 @@ function MainScene:easter(file)
       self.grid:setActive(false)
       POINT_MARKED_COLOR = OFFWHITE 
       POINT_COLOR_VISIBLE = WHITE
-      POINT_COLOR = DARKGREY--OFFWHITE--OFFWHITE--ASBESTOS--OFFBLACK--DARKBLUE--LIGHTBLUE
-      POINT_LINE_COLOR = DARKGREY--OFFBLACK--WHITE--OFFBLACK--DARKBLUE
+      POINT_COLOR = DARKGREY
+      POINT_LINE_COLOR = DARKGREY
 
 
       VIEW_POINT_COLOR = OFFWHITE 
@@ -105,15 +105,15 @@ function MainScene:easter(file)
       --------------------------------
       --  LINE SEGMENT 
       --------------------------------
-      LINE_COLOR = DARKGREY--OFFWHITE--BLACK
-      LINE_COLOR_VISIBLE = WHITE--ASBESTOS--OFFBLACK--DARKBLUE 
+      LINE_COLOR = DARKGREY
+      LINE_COLOR_VISIBLE = WHITE 
 
       --------------------------------
       -- GRID
       --------------------------------
       GRID_LINE_COLOR = OFFBLACK
 
-      SHADOW_COLOR = BLACK--WETASPHALT
+      SHADOW_COLOR = BLACK
    end
 end
 
@@ -154,7 +154,7 @@ end
 ---------------------------------------------------------------------
 function MainScene:draw()
    if self.easterBG then
-      love.graphics.setColor(OFFBLACK)
+      love.graphics.setColor(10,10,10)
       love.graphics.rectangle("fill", 0, 0, love.window.getDimensions() )
       love.graphics.setColor(WHITE)
    end
