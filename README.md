@@ -3,7 +3,7 @@ Clone and initialize submodules:
 
 `git clone https://github.com/mhml92/lineSegmentVisibility.git && cd lineSegmentVisibility && git submodule update --init --recursive && cd ..`
 
-## Run tests
+## Run demos
 
 `love lineSegmentVisibility lineSegmentVisibility/demos/cathedral.txt`
 
