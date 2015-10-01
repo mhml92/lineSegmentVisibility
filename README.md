@@ -6,8 +6,12 @@ Clone and initialize submodules:
 ## Run tests
 
 `love lineSegmentVisibility lineSegmentVisibility/demos/cathedral.txt`
+
 or 
+
 `love lineSegmentVisibility lineSegmentVisibility/demos/dm819.txt`
+
 or
+
 `love lineSegmentVisibility lineSegmentVisibility/demos/asteroids.txt`
 
