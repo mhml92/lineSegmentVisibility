@@ -77,16 +77,17 @@ function Line:calcDistToP(P)
 
   local ABlenghtSquared = Vector.len2(AB[1],AB[2])
   local ABdotAP = Vector.dot(AP[1],AP[2],AB[1],AB[2])
-  local distance = ABdotAP/ABlenghtSquared
+  local difference = ABdotAP/ABlenghtSquared
 
-  if distance < 0 then
+  if difference < 0 then
     --A is closest
     self.value = Vector.dist(A.x,A.y,P.x,P.y)  
-  elseif distance > 1 then 
+  elseif difference > 1 then 
     --B is closest
     self.value = Vector.dist(B.x,B.y,P.x,P.y)
   else
-    self.value = Vector.dist(A.x+AB[1]*distance,A.y+AB[2]*distance,P.x,P.y) 
+    --some point on the line is closest
+    self.value = Vector.dist(A.x+AB[1]*difference,A.y+AB[2]*difference,P.x,P.y) 
   end
 end
 

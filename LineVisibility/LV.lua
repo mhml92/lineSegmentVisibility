@@ -19,7 +19,7 @@ function LV:initialize(points,lines,p,scene,co)
    --add distance for each point
    for _,p in ipairs(self.points) do
       --also reset nodes
-      p:setValue(Vector.dist(self.p.x,self.p.y,p.x,p.y))
+      p:setDistance(Vector.dist(self.p.x,self.p.y,p.x,p.y))
       p.line.node = nil
    end
 
@@ -30,7 +30,7 @@ function LV:initialize(points,lines,p,scene,co)
       if v1 < v2 then
          return true
       elseif v1 == v2 then
-         local d1,d2 = p1:getValue(),p2:getValue() 
+         local d1,d2 = p1:getDistance(),p2:getDistance() 
          if d1 < d2 then 
             return true 
          else 
@@ -66,10 +66,8 @@ function LV:addStartingPoints()
          --now check if line intersects our P point's horizontal line i.e. y+P.y = 0
          local xintersect = (-b+self.p.y)/a-self.p.x
 
-
          --if x intersects the self.p.x axis or if the slope is infinite
          if xintersect >= 0 or p.x-p.other.x == 0  then
-
             local l = p.line
             l.node = self.status:insert(l,l)
             --swap points
@@ -79,34 +77,6 @@ function LV:addStartingPoints()
 
       ::continue::
    end
-end
-
-
-function LV:checkPointClosest(point,test)
-   --current test line
-   local tl = test:getKeyObject()
-   if point.line ~= tl then
-      --create lines
-      local l1 = {} --the closest line
-      l1.x,l1.y = tl.p1.x,tl.p1.y 
-      l1.x2,l1.y2 = tl.p2.x,tl.p2.y
-
-      local l2 = {}
-      l2.x,l2.y = self.p.x,self.p.y --our main point
-      l2.x2,l2.y2 = point.x,point.y -- our current point
-
-      if self:lineIntersection(l1,l2) then
-         table.insert(self.debugLines.red, l2)
-         return true
-      end
-   end
-   --add yellow line
-   local l = {}
-   l.x,l.y = self.p.x,self.p.y --our main point
-   l.x2,l.y2 = point.x,point.y -- our current point
-   table.insert(self.debugLines.yellow, l)
-
-   return false
 end
 
 function LV:runAlg()
@@ -124,15 +94,14 @@ function LV:runAlg()
       else
          table.insert(self.debugLines.red, {x=self.p.x,y=self.p.y,x2=point.x,y2=point.y})
       end
-      closest:getFirst():setVisible(1)
-
+   
       --if point is the second in order
       if not point:isFirst() then
          self.status:deleteNode(l.node)
       end
 
       local closest = self.status:getMin():getKeyObject()
-      if closest ~= nil then
+      if closest then
          closest:getFirst():setVisible(1)
       end
 

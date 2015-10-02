@@ -10,7 +10,7 @@ function Point:initialize(x,y,scene)
    self.marked = false
    self.markShown = false
    self.line = nil
-   self.value = 0
+   self.distance = 0
    self.visible = 0
 end
 
@@ -23,8 +23,8 @@ function Point:setMarked(v)
    self.marked = v
 end
 
-function Point:getValue()
-   return self.value
+function Point:getDistance()
+   return self.distance
 end
 
 function Point:setVisible(val)
@@ -35,8 +35,8 @@ function Point:isVisible()
    return self.visible == 1
 end
 
-function Point:setValue(val)
-   self.value = val
+function Point:setDistance(val)
+   self.distance = val
 end
 
 function Point:isFirst()
