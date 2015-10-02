@@ -60,7 +60,11 @@ function LV:update(dt)
                return false
             else
                local l1,l2 = p1.line,p2.line
-               return Geo.isLeftOf(l2,l1.p2) 
+               if not self:isClone(l1,l2) then
+                  return Geo.isLeftOf(l2,l1.p2) 
+               else 
+                  return false 
+               end
             end
          elseif not p1.isStartPoint and not p2.isStartPoint then
             if  p1.distToP > p2.distToP then
@@ -69,7 +73,11 @@ function LV:update(dt)
                return false
             else
                local l1,l2 = p1.line,p2.line
-               return not Geo.isLeftOf(l2,l1.p1) 
+               if not self:isClone(l1,l2) then
+                  return not Geo.isLeftOf(l2,l1.p1) 
+               else 
+                  return false 
+               end
             end
          elseif p1.isStartPoint and not p2.isStartPoint then
             return true
@@ -84,6 +92,24 @@ function LV:update(dt)
    point.number = k
    end
    self:setVisible()
+end
+
+function LV:isClone(l1,l2)
+   local x1,y1,
+         x2,y2,
+         x3,y3,
+         x4,y4 = 
+         l1.p1.x,l1.p1.y,
+         l1.p2.x,l1.p2.y,
+         l2.p1.x,l2.p1.y,
+         l2.p2.x,l2.p2.y
+
+         if x1 == x3 and y1 == y3 and x2 == x4 and y2 == y4 then
+            return true
+         else 
+            return false
+         end
+         
 end
 
 function LV:getSweepLine()

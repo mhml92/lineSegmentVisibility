@@ -72,7 +72,6 @@ local function isLeftOf(l,p)
    local vx,vy = l.p2.x - l.p1.x, l.p2.y - l.p1.y
    local dx,dy = p.x - l.p1.x, p.y - l.p1.y
    --print("isLeftOf")
-   --print(vx,vy,dx,dy)
    return ((l.p1.x - l.p2.x)*(p.y - l.p2.y) - (l.p1.y - l.p2.y)*(p.x - l.p2.x)) > 0
 end
 
