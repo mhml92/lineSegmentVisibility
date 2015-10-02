@@ -10,8 +10,25 @@ local function round(num)
    return math.floor((num*p)+0.5)/p
 end
 
+local function looseIntersection(l1,l2)
+   local x1,y1,
+         x2,y2,
+         x3,y3,
+         x4,y4 = 
+         l1.p1.x,l1.p1.y,
+         l1.p2.x,l1.p2.y,
+         l2.p1.x,l2.p1.y,
+         l2.p2.x,l2.p2.y
 
-local function intersection(l1,l2)
+   local first,last = (x1*y2-y1*x2),(x3*y4-y3*x4)
+   local denom = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
+
+   local px = (first*(x3-x4)-(x1-x2)*last)/denom 
+   local py = (first*(y3-y4)-(y1-y2)*last)/denom 
+   return Point:new(px,py,l1.scene)
+end
+
+local function strictIntersection(l1,l2)
    local p = {}
    local r = {}
    p.x,p.y = l1.p1.x,l1.p1.y
@@ -22,29 +39,31 @@ local function intersection(l1,l2)
    q.x,q.y = l2.p1.x,l2.p1.y
    s.x, s.y = l2.p2.x-q.x, l2.p2.y-q.y
 
-   local rxs = round(cross(r.x,r.y,s.x,s.y))
-   local qpr = round(cross(q.x-p.x,q.y-p.y,r.x,r.y)) 
+   local rxs = cross(r.x,r.y,s.x,s.y)
+   local qpr = cross(q.x-p.x,q.y-p.y,r.x,r.y) 
    --case 1: Colliniear
-   if rxs == 0 and qpr == 0 then
-     return l2.p1
+   if round(rxs) == 0 and round(qpr) == 0 then
+     -- print("case1")
+      local nx,ny = l2.p1.x,l2.p1.y
+      return Point:new(nx,ny,l2.scene)
    end
 
    --case 2: Parallel and non-intersecting
-   if rxs == 0 and qpr ~= 0 then
+   if round(rxs) == 0 and round(qpr) ~= 0 then
       return nil
    end
 
-   local tolerance = 0.0
+   local tolerance = 0.000
    --case 3: intersection!
-   local t = round(cross(q.x-p.x,q.y-p.y,s.x,s.y))/rxs
+   local t = round(cross(q.x-p.x,q.y-p.y,s.x,s.y)/rxs)
    local u = round(qpr/rxs)
-   if rxs ~= 0 and 0 <= t+tolerance and t-tolerance <= 1 and 0 <= u+tolerance and u-tolerance <= 1 then
-      local px,py = round(p.x+(t*r.x)),round(p.y+(t*r.y))
+   if round(rxs) ~= 0 and 0 <= round(t)+tolerance and round(t)-tolerance <= 1 and 0 <= round(u)+tolerance and round(u)-tolerance <= 1 then
+      --print(t,u)
+      local px,py = p.x+(t*r.x),p.y+(t*r.y)
+      --print("case3",px,py)
       local np = Point:new(px,py,l1.scene)
       return np 
    end
-   --print(rxs,t,u,qpr)
-
    return nil
 end
 
@@ -59,7 +78,8 @@ end
 
 
 return {
-   intersection = intersection,
+   looseIntersection = looseIntersection,
+   strictIntersection = strictIntersection,
    isLeftOf = isLeftOf,
    round = round
 }

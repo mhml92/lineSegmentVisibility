@@ -39,18 +39,15 @@ function LV:update(dt)
       -- reset visibility,and set startpoint ref
       l:init()
       -- if line crosses sweepline: revers start point and add to status
-      if Geo.intersection(self:getSweepLine(),l) then
+      if Geo.strictIntersection(self:getSweepLine(),l) then
          if l.p1.y > l.p2.y then
             l:reverseStartPoint()
             self.status:insert(l)
          end
       end
    end
-
    table.sort(self.points,function(p1,p2)
-      if p1.id == p2.id then 
-         return false
-      end
+      if p1.id == p2.id then return false end
       if p1.angleToP > p2.angleToP then
          return true
       elseif p1.angleToP < p2.angleToP then
@@ -62,9 +59,8 @@ function LV:update(dt)
             elseif p1.distToP > p2.distToP then
                return false
             else
-               
                local l1,l2 = p1.line,p2.line
-               return Geo.isLeftOf(l2,l1.p2)
+               return Geo.isLeftOf(l2,l1.p2) 
             end
          elseif not p1.isStartPoint and not p2.isStartPoint then
             if  p1.distToP > p2.distToP then
@@ -73,7 +69,7 @@ function LV:update(dt)
                return false
             else
                local l1,l2 = p1.line,p2.line
-               return not  Geo.isLeftOf(l2,l1.p1)
+               return not Geo.isLeftOf(l2,l1.p1) 
             end
          elseif p1.isStartPoint and not p2.isStartPoint then
             return true
@@ -82,6 +78,7 @@ function LV:update(dt)
          end
       end
    end)
+
    --dirty hack, add numbers to points
    for k,point in ipairs(self.points) do
    point.number = k
@@ -98,8 +95,8 @@ function LV:setSweepLine(x,y)
 
    local dx,dy = x - P.x, y - P.y
 
-   dx,dy = Vector.normalize(dx,dy)
-   dx,dy = P.x+(dx*(self.maxDist*2)),P.y+(dy*(self.maxDist*2))
+   --dx,dy = Vector.normalize(dx,dy)
+   dx,dy = P.x+(dx*(self.maxDist+1)),P.y+(dy*(self.maxDist+1))
    local nsl = Line:new(P,Point:new(dx,dy,self.scene),self.scene)
    self.sweepLine = nsl 
 end
@@ -130,6 +127,10 @@ function LV:distToP(pointp)
       pointp = Point:new(P.x+1,P.y,self.scene)
    end
    ]]
+   if not pointp.x or not pointp.y then
+      print(debug.traceback())
+      print(point)
+   end
    return Vector.dist(P.x,P.y,pointp.x,pointp.y)
 end
 

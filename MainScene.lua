@@ -66,6 +66,12 @@ function MainScene:initialize()
             end
          end
       end
+      if self.p == nil then
+         self.p = Point(0,0,self)
+         self:addEntity(self.p)
+         self.p:setViewPoint()
+         self.cammgr:setCenter(self.p.x,self.p.y)
+      end
    else
       self.p = Point(0,0,self)
       self:addEntity(self.p)
@@ -83,7 +89,7 @@ function MainScene:initialize()
 end
 
 function MainScene:easter(file)
-
+if file then
 	local t={} ; i=1
 	for str in string.gmatch(file, "([^".."/".."]+)") do
 		t[i] = str
@@ -115,6 +121,7 @@ function MainScene:easter(file)
 
       SHADOW_COLOR = BLACK
    end
+end
 end
 
 function MainScene:defineLayers()

@@ -84,11 +84,11 @@ end
 
 local function dist(x1,y1, x2,y2)
    if not x2 then
-    --  print("no x2")
+     print(os.clock(),"no x2")
       x2 = 0
    end
    if not y2 then
-    --  print("no y2")
+     print(os.clock(),"no y2")
       y2 = 0
 
    end
@@ -131,7 +131,6 @@ end
 
 local function angleTo(x,y, u,v)
 	if u and v then
-      print("line:",atan2(y,x),"sweepline:",atan2(v,u))
 		return atan2(y, x) - atan2(v, u)
 	end
 	return atan2(y, x)
