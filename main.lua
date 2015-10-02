@@ -30,7 +30,6 @@ function love.load()
 end
 
 function love.update(dt)
-   require("lovebird").update()
    time.accum = time.accum + dt 
    if time.accum >= time.fdt then
       self.scene:update(time.fdt)
